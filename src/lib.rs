@@ -16,8 +16,8 @@ pub use add::OptionAdd;
 
 // TODO Eq
 
-pub mod option_checked;
-pub use option_checked::OptionChecked;
+pub mod checked_error;
+pub use checked_error::CheckedError;
 
 pub mod ord;
 pub use ord::OptionOrd;
