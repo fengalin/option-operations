@@ -31,6 +31,18 @@ where
     }
 }
 
+impl<T, InnerRhs> OptionAdd<&Option<InnerRhs>, InnerRhs> for T
+where
+    T: OptionOperations + Add<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as Add<InnerRhs>>::Output;
+
+    fn opt_add(self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
+        rhs.as_ref().map(|inner_rhs| self.add(*inner_rhs))
+    }
+}
+
 impl<T, Rhs> OptionAdd<Rhs> for Option<T>
 where
     T: OptionOperations + Add<Rhs>,
@@ -51,6 +63,19 @@ where
     fn opt_add(self, rhs: Option<InnerRhs>) -> Option<Self::Output> {
         self.zip(rhs)
             .map(|(inner_self, inner_rhs)| inner_self.add(inner_rhs))
+    }
+}
+
+impl<T, InnerRhs> OptionAdd<&Option<InnerRhs>, InnerRhs> for Option<T>
+where
+    T: OptionOperations + Add<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as Add<InnerRhs>>::Output;
+
+    fn opt_add(self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
+        self.zip(rhs.as_ref())
+            .map(|(inner_self, inner_rhs)| inner_self.add(*inner_rhs))
     }
 }
 
@@ -79,6 +104,18 @@ where
     }
 }
 
+impl<T, InnerRhs> OptionAddAssign<&Option<InnerRhs>, InnerRhs> for T
+where
+    T: OptionOperations + AddAssign<InnerRhs>,
+    InnerRhs: Copy,
+{
+    fn opt_add_assign(&mut self, rhs: &Option<InnerRhs>) {
+        if let Some(inner_rhs) = rhs.as_ref() {
+            self.add_assign(*inner_rhs)
+        }
+    }
+}
+
 impl<T, Rhs> OptionAddAssign<Rhs> for Option<T>
 where
     T: OptionOperations + AddAssign<Rhs>,
@@ -101,6 +138,18 @@ where
     }
 }
 
+impl<T, InnerRhs> OptionAddAssign<&Option<InnerRhs>, InnerRhs> for Option<T>
+where
+    T: OptionOperations + AddAssign<InnerRhs>,
+    InnerRhs: Copy,
+{
+    fn opt_add_assign(&mut self, rhs: &Option<InnerRhs>) {
+        if let Some((inner_self, inner_rhs)) = self.as_mut().zip(rhs.as_ref()) {
+            inner_self.add_assign(*inner_rhs)
+        }
+    }
+}
+
 /// TODO: doc
 pub trait OptionCheckedAdd<Rhs = Self, InnerRhs = Rhs> {
     type Output;
@@ -117,6 +166,22 @@ where
     fn opt_checked_add(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
         if let Some(inner_rhs) = rhs {
             self.opt_checked_add(inner_rhs)
+        } else {
+            Ok(None)
+        }
+    }
+}
+
+impl<T, InnerRhs> OptionCheckedAdd<&Option<InnerRhs>, InnerRhs> for T
+where
+    T: OptionOperations + OptionCheckedAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionCheckedAdd<InnerRhs>>::Output;
+
+    fn opt_checked_add(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+        if let Some(inner_rhs) = rhs.as_ref() {
+            self.opt_checked_add(*inner_rhs)
         } else {
             Ok(None)
         }
@@ -153,6 +218,22 @@ where
     }
 }
 
+impl<T, InnerRhs> OptionCheckedAdd<&Option<InnerRhs>, InnerRhs> for Option<T>
+where
+    T: OptionOperations + OptionCheckedAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionCheckedAdd<InnerRhs>>::Output;
+
+    fn opt_checked_add(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+        if let (Some(inner_self), Some(inner_rhs)) = (self, rhs.as_ref()) {
+            inner_self.opt_checked_add(*inner_rhs)
+        } else {
+            Ok(None)
+        }
+    }
+}
+
 // TODO impl on integers & time types
 
 /// TODO: doc
@@ -170,6 +251,19 @@ where
 
     fn opt_overflowing_add(self, rhs: Option<InnerRhs>) -> Option<(Self::Output, bool)> {
         rhs.and_then(|inner_rhs| self.opt_overflowing_add(inner_rhs))
+    }
+}
+
+impl<T, InnerRhs> OptionOverflowingAdd<&Option<InnerRhs>, InnerRhs> for T
+where
+    T: OptionOperations + OptionOverflowingAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionOverflowingAdd<InnerRhs>>::Output;
+
+    fn opt_overflowing_add(self, rhs: &Option<InnerRhs>) -> Option<(Self::Output, bool)> {
+        rhs.as_ref()
+            .and_then(|inner_rhs| self.opt_overflowing_add(*inner_rhs))
     }
 }
 
@@ -196,6 +290,19 @@ where
     }
 }
 
+impl<T, InnerRhs> OptionOverflowingAdd<&Option<InnerRhs>, InnerRhs> for Option<T>
+where
+    T: OptionOperations + OptionOverflowingAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionOverflowingAdd<InnerRhs>>::Output;
+
+    fn opt_overflowing_add(self, rhs: &Option<InnerRhs>) -> Option<(Self::Output, bool)> {
+        self.zip(rhs.as_ref())
+            .and_then(|(inner_self, inner_rhs)| inner_self.opt_overflowing_add(*inner_rhs))
+    }
+}
+
 // TODO impl on integers & time types
 
 /// TODO: doc
@@ -213,6 +320,19 @@ where
 
     fn opt_saturating_add(self, rhs: Option<InnerRhs>) -> Option<Self::Output> {
         rhs.and_then(|inner_rhs| self.opt_saturating_add(inner_rhs))
+    }
+}
+
+impl<T, InnerRhs> OptionSaturatingAdd<&Option<InnerRhs>, InnerRhs> for T
+where
+    T: OptionOperations + OptionSaturatingAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionSaturatingAdd<InnerRhs>>::Output;
+
+    fn opt_saturating_add(self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
+        rhs.as_ref()
+            .and_then(|inner_rhs| self.opt_saturating_add(*inner_rhs))
     }
 }
 
@@ -239,6 +359,19 @@ where
     }
 }
 
+impl<T, InnerRhs> OptionSaturatingAdd<&Option<InnerRhs>, InnerRhs> for Option<T>
+where
+    T: OptionOperations + OptionSaturatingAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionSaturatingAdd<InnerRhs>>::Output;
+
+    fn opt_saturating_add(self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
+        self.zip(rhs.as_ref())
+            .and_then(|(inner_self, inner_rhs)| inner_self.opt_saturating_add(*inner_rhs))
+    }
+}
+
 // TODO impl on integers & time types
 
 /// TODO: doc
@@ -256,6 +389,19 @@ where
 
     fn opt_wrapping_add(self, rhs: Option<InnerRhs>) -> Option<Self::Output> {
         rhs.and_then(|inner_rhs| self.opt_wrapping_add(inner_rhs))
+    }
+}
+
+impl<T, InnerRhs> OptionWrappingAdd<&Option<InnerRhs>, InnerRhs> for T
+where
+    T: OptionOperations + OptionWrappingAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionWrappingAdd<InnerRhs>>::Output;
+
+    fn opt_wrapping_add(self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
+        rhs.as_ref()
+            .and_then(|inner_rhs| self.opt_wrapping_add(*inner_rhs))
     }
 }
 
@@ -279,6 +425,19 @@ where
     fn opt_wrapping_add(self, rhs: Option<InnerRhs>) -> Option<Self::Output> {
         self.zip(rhs)
             .and_then(|(inner_self, inner_rhs)| inner_self.opt_wrapping_add(inner_rhs))
+    }
+}
+
+impl<T, InnerRhs> OptionWrappingAdd<&Option<InnerRhs>, InnerRhs> for Option<T>
+where
+    T: OptionOperations + OptionWrappingAdd<InnerRhs>,
+    InnerRhs: Copy,
+{
+    type Output = <T as OptionWrappingAdd<InnerRhs>>::Output;
+
+    fn opt_wrapping_add(self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
+        self.zip(rhs.as_ref())
+            .and_then(|(inner_self, inner_rhs)| inner_self.opt_wrapping_add(*inner_rhs))
     }
 }
 
@@ -338,6 +497,7 @@ mod test {
         assert_eq!(MY_1.opt_add(MY_1), SOME_2);
         assert_eq!(SOME_1.opt_add(MY_1), SOME_2);
         assert_eq!(MY_1.opt_add(SOME_1), SOME_2);
+        assert_eq!(MY_1.opt_add(&SOME_1), SOME_2);
         assert_eq!(MY_1.opt_add(NONE), NONE);
         assert_eq!(NONE.opt_add(MY_1), NONE);
     }
@@ -348,8 +508,9 @@ mod test {
         assert_eq!(MY_1.opt_add(Some(1)), SOME_2);
         assert_eq!(SOME_1.opt_add(1), SOME_2);
         assert_eq!(SOME_1.opt_add(Some(1)), SOME_2);
-        assert_eq!(MY_1.opt_add(NONE), NONE);
-        assert_eq!(NONE.opt_add(MY_1), NONE);
+        assert_eq!(SOME_1.opt_add(&Some(1)), SOME_2);
+        assert_eq!(MY_1.opt_add(Option::<u64>::None), NONE);
+        assert_eq!(Option::<MyInt>::None.opt_add(Option::<u64>::None), NONE);
     }
 
     #[test]
@@ -367,8 +528,20 @@ mod test {
         assert_eq!(my, MY_2);
 
         let mut my = MY_1;
+        my.opt_add_assign(&SOME_1);
+        assert_eq!(my, MY_2);
+
+        let mut my = MY_1;
         my.opt_add_assign(NONE);
         assert_eq!(my, MY_1);
+
+        let mut some = SOME_1;
+        some.opt_add_assign(SOME_1);
+        assert_eq!(some, SOME_2);
+
+        let mut some = SOME_1;
+        some.opt_add_assign(&SOME_1);
+        assert_eq!(some, SOME_2);
 
         let mut some = SOME_1;
         some.opt_add_assign(NONE);
@@ -396,6 +569,18 @@ mod test {
         let mut my = MY_1;
         my.opt_add_assign(Some(1));
         assert_eq!(my, MY_2);
+
+        let mut my = MY_1;
+        my.opt_add_assign(&Some(1));
+        assert_eq!(my, MY_2);
+
+        let mut some = SOME_1;
+        some.opt_add_assign(Some(1));
+        assert_eq!(some, SOME_2);
+
+        let mut some = SOME_1;
+        some.opt_add_assign(&Some(1));
+        assert_eq!(some, SOME_2);
 
         let mut none = NONE;
         none.opt_add_assign(Some(1));
@@ -427,7 +612,14 @@ mod test {
         }
 
         assert_eq!(MY_1.opt_checked_add(MY_1), Ok(SOME_2));
+        assert_eq!(MY_1.opt_checked_add(SOME_1), Ok(SOME_2));
+        assert_eq!(MY_1.opt_checked_add(&SOME_1), Ok(SOME_2));
         assert_eq!(MY_MAX.opt_checked_add(MY_1), Err(CheckedError::Overflow));
+
+        assert_eq!(SOME_1.opt_checked_add(MY_1), Ok(SOME_2));
+        assert_eq!(SOME_1.opt_checked_add(SOME_1), Ok(SOME_2));
+        assert_eq!(SOME_1.opt_checked_add(&SOME_1), Ok(SOME_2));
+
         assert_eq!(SOME_MAX.opt_checked_add(MY_1), Err(CheckedError::Overflow));
         assert_eq!(SOME_MAX.opt_checked_add(1), Err(CheckedError::Overflow));
         assert_eq!(
@@ -462,7 +654,9 @@ mod test {
         assert_eq!(SOME_MAX.opt_saturating_add(MY_1), SOME_MAX);
         assert_eq!(SOME_MAX.opt_saturating_add(1), SOME_MAX);
         assert_eq!(SOME_MAX.opt_saturating_add(Some(1)), SOME_MAX);
+        assert_eq!(SOME_MAX.opt_saturating_add(&Some(1)), SOME_MAX);
         assert_eq!(MY_1.opt_saturating_add(SOME_MAX), SOME_MAX);
+        assert_eq!(MY_1.opt_saturating_add(&SOME_MAX), SOME_MAX);
         assert_eq!(MY_MAX.opt_saturating_add(NONE), NONE);
         assert_eq!(NONE.opt_saturating_add(SOME_MAX), NONE);
     }
@@ -492,7 +686,9 @@ mod test {
         assert_eq!(SOME_MAX.opt_overflowing_add(MY_1), Some((MY_0, true)));
         assert_eq!(SOME_MAX.opt_overflowing_add(1), Some((MY_0, true)));
         assert_eq!(SOME_MAX.opt_overflowing_add(Some(1)), Some((MY_0, true)));
+        assert_eq!(SOME_MAX.opt_overflowing_add(&Some(1)), Some((MY_0, true)));
         assert_eq!(MY_1.opt_overflowing_add(SOME_MAX), Some((MY_0, true)));
+        assert_eq!(MY_1.opt_overflowing_add(&SOME_MAX), Some((MY_0, true)));
         assert_eq!(MY_MAX.opt_overflowing_add(NONE), None);
         assert_eq!(NONE.opt_overflowing_add(SOME_MAX), None);
     }
@@ -520,7 +716,9 @@ mod test {
         assert_eq!(SOME_MAX.opt_wrapping_add(MY_1), SOME_0);
         assert_eq!(SOME_MAX.opt_wrapping_add(1), SOME_0);
         assert_eq!(SOME_MAX.opt_wrapping_add(Some(1)), SOME_0);
+        assert_eq!(SOME_MAX.opt_wrapping_add(&Some(1)), SOME_0);
         assert_eq!(MY_1.opt_wrapping_add(SOME_MAX), SOME_0);
+        assert_eq!(MY_1.opt_wrapping_add(&SOME_MAX), SOME_0);
         assert_eq!(MY_MAX.opt_wrapping_add(NONE), NONE);
         assert_eq!(NONE.opt_wrapping_add(SOME_MAX), NONE);
     }

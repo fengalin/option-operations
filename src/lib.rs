@@ -14,8 +14,6 @@ impl OptionOperations for u64 {}
 pub mod add;
 pub use add::OptionAdd;
 
-// TODO Eq
-
 pub mod checked_error;
 pub use checked_error::CheckedError;
 
