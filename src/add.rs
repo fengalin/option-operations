@@ -510,7 +510,7 @@ mod test {
         assert_eq!(SOME_1.opt_add(Some(1)), SOME_2);
         assert_eq!(SOME_1.opt_add(&Some(1)), SOME_2);
         assert_eq!(MY_1.opt_add(Option::<u64>::None), NONE);
-        assert_eq!(Option::<MyInt>::None.opt_add(Option::<u64>::None), NONE);
+        assert_eq!(Option::<MyInt>::None.opt_add(MY_0), NONE);
     }
 
     #[test]

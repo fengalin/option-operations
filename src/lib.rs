@@ -26,11 +26,22 @@ pub use min_max::OptionMinMax;
 pub mod ord;
 pub use ord::OptionOrd;
 
+pub mod sub;
+pub use sub::{
+    OptionCheckedSub, OptionOverflowingSub, OptionSaturatingSub, OptionSub, OptionSubAssign,
+    OptionWrappingSub,
+};
+
 pub mod prelude {
     pub use super::OptionMinMax;
+    pub use super::OptionOperations;
     pub use super::OptionOrd;
     pub use super::{
         OptionAdd, OptionAddAssign, OptionCheckedAdd, OptionOverflowingAdd, OptionSaturatingAdd,
         OptionWrappingAdd,
+    };
+    pub use super::{
+        OptionCheckedSub, OptionOverflowingSub, OptionSaturatingSub, OptionSub, OptionSubAssign,
+        OptionWrappingSub,
     };
 }
