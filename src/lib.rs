@@ -20,6 +20,9 @@ pub use add::{
 pub mod checked_error;
 pub use checked_error::CheckedError;
 
+pub mod eq;
+pub use eq::OptionEq;
+
 pub mod min_max;
 pub use min_max::OptionMinMax;
 

@@ -69,7 +69,7 @@ where
     }
 }
 
-impl<T, Rhs> OptionOrd<Rhs, Rhs> for T
+impl<T, Rhs> OptionOrd<Rhs> for T
 where
     T: OptionOperations + for<'a> OptionOrd<&'a Rhs, Rhs>,
 {
@@ -105,7 +105,7 @@ where
     }
 }
 
-impl<T, Rhs> OptionOrd<Rhs, Rhs> for Option<T>
+impl<T, Rhs> OptionOrd<Rhs> for Option<T>
 where
     T: OptionOperations + for<'a> OptionOrd<&'a Rhs, Rhs>,
 {
