@@ -33,15 +33,15 @@ pub use sub::{
 };
 
 pub mod prelude {
-    pub use super::OptionMinMax;
-    pub use super::OptionOperations;
-    pub use super::OptionOrd;
-    pub use super::{
+    pub use crate::add::{
         OptionAdd, OptionAddAssign, OptionCheckedAdd, OptionOverflowingAdd, OptionSaturatingAdd,
         OptionWrappingAdd,
     };
-    pub use super::{
+    pub use crate::min_max::OptionMinMax;
+    pub use crate::ord::OptionOrd;
+    pub use crate::sub::{
         OptionCheckedSub, OptionOverflowingSub, OptionSaturatingSub, OptionSub, OptionSubAssign,
         OptionWrappingSub,
     };
+    pub use crate::OptionOperations;
 }
