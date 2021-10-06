@@ -20,14 +20,30 @@ pub use add::{
 pub mod checked_error;
 pub use checked_error::CheckedError;
 
+pub mod div;
+pub use div::{
+    OptionCheckedDiv, OptionDiv, OptionDivAssign, OptionOverflowingDiv, OptionWrappingDiv,
+};
+
 pub mod eq;
 pub use eq::OptionEq;
 
 pub mod min_max;
 pub use min_max::OptionMinMax;
 
+pub mod mul;
+pub use mul::{
+    OptionCheckedMul, OptionMul, OptionMulAssign, OptionOverflowingMul, OptionSaturatingMul,
+    OptionWrappingMul,
+};
+
 pub mod ord;
 pub use ord::OptionOrd;
+
+pub mod rem;
+pub use rem::{
+    OptionCheckedRem, OptionOverflowingRem, OptionRem, OptionRemAssign, OptionWrappingRem,
+};
 
 pub mod sub;
 pub use sub::{
@@ -40,8 +56,18 @@ pub mod prelude {
         OptionAdd, OptionAddAssign, OptionCheckedAdd, OptionOverflowingAdd, OptionSaturatingAdd,
         OptionWrappingAdd,
     };
+    pub use crate::div::{
+        OptionCheckedDiv, OptionDiv, OptionDivAssign, OptionOverflowingDiv, OptionWrappingDiv,
+    };
     pub use crate::min_max::OptionMinMax;
+    pub use crate::mul::{
+        OptionCheckedMul, OptionMul, OptionMulAssign, OptionOverflowingMul, OptionSaturatingMul,
+        OptionWrappingMul,
+    };
     pub use crate::ord::OptionOrd;
+    pub use crate::rem::{
+        OptionCheckedRem, OptionOverflowingRem, OptionRem, OptionRemAssign, OptionWrappingRem,
+    };
     pub use crate::sub::{
         OptionCheckedSub, OptionOverflowingSub, OptionSaturatingSub, OptionSub, OptionSubAssign,
         OptionWrappingSub,
