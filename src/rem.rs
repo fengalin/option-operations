@@ -1,6 +1,6 @@
 use core::ops::{Rem, RemAssign};
 
-use crate::{CheckedError, OptionOperations};
+use crate::{Error, OptionOperations};
 
 /// TODO: doc
 pub trait OptionRem<Rhs, InnerRhs = Rhs> {
@@ -154,7 +154,7 @@ where
 pub trait OptionCheckedRem<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
-    fn opt_checked_rem(self, rhs: Rhs) -> Result<Option<Self::Output>, CheckedError>;
+    fn opt_checked_rem(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
 impl<T, InnerRhs> OptionCheckedRem<Option<InnerRhs>, InnerRhs> for T
@@ -163,7 +163,7 @@ where
 {
     type Output = <T as OptionCheckedRem<InnerRhs>>::Output;
 
-    fn opt_checked_rem(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_rem(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_rhs) = rhs {
             self.opt_checked_rem(inner_rhs)
         } else {
@@ -179,7 +179,7 @@ where
 {
     type Output = <T as OptionCheckedRem<InnerRhs>>::Output;
 
-    fn opt_checked_rem(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_rem(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_rhs) = rhs.as_ref() {
             self.opt_checked_rem(*inner_rhs)
         } else {
@@ -194,7 +194,7 @@ where
 {
     type Output = <T as OptionCheckedRem<Rhs>>::Output;
 
-    fn opt_checked_rem(self, rhs: Rhs) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_rem(self, rhs: Rhs) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_self) = self {
             inner_self.opt_checked_rem(rhs)
         } else {
@@ -209,7 +209,7 @@ where
 {
     type Output = <T as OptionCheckedRem<InnerRhs>>::Output;
 
-    fn opt_checked_rem(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_rem(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let (Some(inner_self), Some(inner_rhs)) = (self, rhs) {
             inner_self.opt_checked_rem(inner_rhs)
         } else {
@@ -225,7 +225,7 @@ where
 {
     type Output = <T as OptionCheckedRem<InnerRhs>>::Output;
 
-    fn opt_checked_rem(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_rem(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let (Some(inner_self), Some(inner_rhs)) = (self, rhs.as_ref()) {
             inner_self.opt_checked_rem(*inner_rhs)
         } else {
@@ -564,13 +564,13 @@ mod test {
         impl OptionCheckedRem for MyInt {
             type Output = MyInt;
 
-            fn opt_checked_rem(self, rhs: MyInt) -> Result<Option<Self::Output>, CheckedError> {
+            fn opt_checked_rem(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
                 if rhs.0 == 0 {
-                    return Err(CheckedError::DivisionByZero);
+                    return Err(Error::DivisionByZero);
                 }
                 self.0
                     .checked_rem(rhs.0)
-                    .ok_or(CheckedError::Overflow)
+                    .ok_or(Error::Overflow)
                     .map(|val| Some(MyInt(val)))
             }
         }
@@ -578,13 +578,13 @@ mod test {
         impl OptionCheckedRem<i64> for MyInt {
             type Output = MyInt;
 
-            fn opt_checked_rem(self, rhs: i64) -> Result<Option<Self::Output>, CheckedError> {
+            fn opt_checked_rem(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
                 if rhs == 0 {
-                    return Err(CheckedError::DivisionByZero);
+                    return Err(Error::DivisionByZero);
                 }
                 self.0
                     .checked_rem(rhs)
-                    .ok_or(CheckedError::Overflow)
+                    .ok_or(Error::Overflow)
                     .map(|val| Some(MyInt(val)))
             }
         }
@@ -593,49 +593,25 @@ mod test {
         assert_eq!(MY_5.opt_checked_rem(SOME_2), Ok(SOME_1));
         assert_eq!(MY_0.opt_checked_rem(&SOME_1), Ok(SOME_0));
         assert_eq!(MY_MAX.opt_checked_rem(MY_2), Ok(SOME_1));
-        assert_eq!(
-            MY_MAX.opt_checked_rem(MY_0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(
-            MY_MIN.opt_checked_rem(MY_MINUS_1),
-            Err(CheckedError::Overflow)
-        );
+        assert_eq!(MY_MAX.opt_checked_rem(MY_0), Err(Error::DivisionByZero));
+        assert_eq!(MY_MIN.opt_checked_rem(MY_MINUS_1), Err(Error::Overflow));
 
         assert_eq!(SOME_2.opt_checked_rem(MY_1), Ok(SOME_0));
         assert_eq!(SOME_5.opt_checked_rem(SOME_2), Ok(SOME_1));
         assert_eq!(SOME_0.opt_checked_rem(&SOME_1), Ok(SOME_0));
 
         assert_eq!(SOME_MAX.opt_checked_rem(MY_2), Ok(SOME_1));
-        assert_eq!(
-            SOME_MAX.opt_checked_rem(MY_0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(
-            SOME_MIN.opt_checked_rem(MY_MINUS_1),
-            Err(CheckedError::Overflow)
-        );
-        assert_eq!(
-            SOME_MAX.opt_checked_rem(0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(SOME_MIN.opt_checked_rem(-1), Err(CheckedError::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_rem(MY_0), Err(Error::DivisionByZero));
+        assert_eq!(SOME_MIN.opt_checked_rem(MY_MINUS_1), Err(Error::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_rem(0), Err(Error::DivisionByZero));
+        assert_eq!(SOME_MIN.opt_checked_rem(-1), Err(Error::Overflow));
         assert_eq!(
             SOME_MAX.opt_checked_rem(Some(0)),
-            Err(CheckedError::DivisionByZero)
+            Err(Error::DivisionByZero)
         );
-        assert_eq!(
-            SOME_MIN.opt_checked_rem(Some(-1)),
-            Err(CheckedError::Overflow)
-        );
-        assert_eq!(
-            SOME_MAX.opt_checked_rem(SOME_0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(
-            SOME_MIN.opt_checked_rem(SOME_MINUS_1),
-            Err(CheckedError::Overflow)
-        );
+        assert_eq!(SOME_MIN.opt_checked_rem(Some(-1)), Err(Error::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_rem(SOME_0), Err(Error::DivisionByZero));
+        assert_eq!(SOME_MIN.opt_checked_rem(SOME_MINUS_1), Err(Error::Overflow));
         assert_eq!(MY_MIN.opt_checked_rem(NONE), Ok(None));
         assert_eq!(NONE.opt_checked_rem(SOME_MIN), Ok(None));
     }

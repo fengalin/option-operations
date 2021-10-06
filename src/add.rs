@@ -1,6 +1,6 @@
 use core::ops::{Add, AddAssign};
 
-use crate::{CheckedError, OptionOperations};
+use crate::{Error, OptionOperations};
 
 /// TODO: doc
 pub trait OptionAdd<Rhs, InnerRhs = Rhs> {
@@ -154,7 +154,7 @@ where
 pub trait OptionCheckedAdd<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
-    fn opt_checked_add(self, rhs: Rhs) -> Result<Option<Self::Output>, CheckedError>;
+    fn opt_checked_add(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
 impl<T, InnerRhs> OptionCheckedAdd<Option<InnerRhs>, InnerRhs> for T
@@ -163,7 +163,7 @@ where
 {
     type Output = <T as OptionCheckedAdd<InnerRhs>>::Output;
 
-    fn opt_checked_add(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_add(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_rhs) = rhs {
             self.opt_checked_add(inner_rhs)
         } else {
@@ -179,7 +179,7 @@ where
 {
     type Output = <T as OptionCheckedAdd<InnerRhs>>::Output;
 
-    fn opt_checked_add(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_add(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_rhs) = rhs.as_ref() {
             self.opt_checked_add(*inner_rhs)
         } else {
@@ -194,7 +194,7 @@ where
 {
     type Output = <T as OptionCheckedAdd<Rhs>>::Output;
 
-    fn opt_checked_add(self, rhs: Rhs) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_add(self, rhs: Rhs) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_self) = self {
             inner_self.opt_checked_add(rhs)
         } else {
@@ -209,7 +209,7 @@ where
 {
     type Output = <T as OptionCheckedAdd<InnerRhs>>::Output;
 
-    fn opt_checked_add(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_add(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let (Some(inner_self), Some(inner_rhs)) = (self, rhs) {
             inner_self.opt_checked_add(inner_rhs)
         } else {
@@ -225,7 +225,7 @@ where
 {
     type Output = <T as OptionCheckedAdd<InnerRhs>>::Output;
 
-    fn opt_checked_add(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_add(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let (Some(inner_self), Some(inner_rhs)) = (self, rhs.as_ref()) {
             inner_self.opt_checked_add(*inner_rhs)
         } else {
@@ -592,10 +592,10 @@ mod test {
         impl OptionCheckedAdd for MyInt {
             type Output = MyInt;
 
-            fn opt_checked_add(self, rhs: MyInt) -> Result<Option<Self::Output>, CheckedError> {
+            fn opt_checked_add(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
                 self.0
                     .checked_add(rhs.0)
-                    .ok_or(CheckedError::Overflow)
+                    .ok_or(Error::Overflow)
                     .map(|val| Some(MyInt(val)))
             }
         }
@@ -603,10 +603,10 @@ mod test {
         impl OptionCheckedAdd<u64> for MyInt {
             type Output = MyInt;
 
-            fn opt_checked_add(self, rhs: u64) -> Result<Option<Self::Output>, CheckedError> {
+            fn opt_checked_add(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
                 self.0
                     .checked_add(rhs)
-                    .ok_or(CheckedError::Overflow)
+                    .ok_or(Error::Overflow)
                     .map(|val| Some(MyInt(val)))
             }
         }
@@ -614,19 +614,16 @@ mod test {
         assert_eq!(MY_1.opt_checked_add(MY_1), Ok(SOME_2));
         assert_eq!(MY_1.opt_checked_add(SOME_1), Ok(SOME_2));
         assert_eq!(MY_1.opt_checked_add(&SOME_1), Ok(SOME_2));
-        assert_eq!(MY_MAX.opt_checked_add(MY_1), Err(CheckedError::Overflow));
+        assert_eq!(MY_MAX.opt_checked_add(MY_1), Err(Error::Overflow));
 
         assert_eq!(SOME_1.opt_checked_add(MY_1), Ok(SOME_2));
         assert_eq!(SOME_1.opt_checked_add(SOME_1), Ok(SOME_2));
         assert_eq!(SOME_1.opt_checked_add(&SOME_1), Ok(SOME_2));
 
-        assert_eq!(SOME_MAX.opt_checked_add(MY_1), Err(CheckedError::Overflow));
-        assert_eq!(SOME_MAX.opt_checked_add(1), Err(CheckedError::Overflow));
-        assert_eq!(
-            SOME_MAX.opt_checked_add(Some(1)),
-            Err(CheckedError::Overflow)
-        );
-        assert_eq!(MY_1.opt_checked_add(SOME_MAX), Err(CheckedError::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_add(MY_1), Err(Error::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_add(1), Err(Error::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_add(Some(1)), Err(Error::Overflow));
+        assert_eq!(MY_1.opt_checked_add(SOME_MAX), Err(Error::Overflow));
         assert_eq!(MY_MAX.opt_checked_add(NONE), Ok(None));
         assert_eq!(NONE.opt_checked_add(SOME_MAX), Ok(None));
     }

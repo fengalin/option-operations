@@ -1,6 +1,6 @@
 use core::ops::{Div, DivAssign};
 
-use crate::{CheckedError, OptionOperations};
+use crate::{Error, OptionOperations};
 
 /// TODO: doc
 pub trait OptionDiv<Rhs, InnerRhs = Rhs> {
@@ -154,7 +154,7 @@ where
 pub trait OptionCheckedDiv<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
-    fn opt_checked_div(self, rhs: Rhs) -> Result<Option<Self::Output>, CheckedError>;
+    fn opt_checked_div(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
 impl<T, InnerRhs> OptionCheckedDiv<Option<InnerRhs>, InnerRhs> for T
@@ -163,7 +163,7 @@ where
 {
     type Output = <T as OptionCheckedDiv<InnerRhs>>::Output;
 
-    fn opt_checked_div(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_div(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_rhs) = rhs {
             self.opt_checked_div(inner_rhs)
         } else {
@@ -179,7 +179,7 @@ where
 {
     type Output = <T as OptionCheckedDiv<InnerRhs>>::Output;
 
-    fn opt_checked_div(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_div(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_rhs) = rhs.as_ref() {
             self.opt_checked_div(*inner_rhs)
         } else {
@@ -194,7 +194,7 @@ where
 {
     type Output = <T as OptionCheckedDiv<Rhs>>::Output;
 
-    fn opt_checked_div(self, rhs: Rhs) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_div(self, rhs: Rhs) -> Result<Option<Self::Output>, Error> {
         if let Some(inner_self) = self {
             inner_self.opt_checked_div(rhs)
         } else {
@@ -209,7 +209,7 @@ where
 {
     type Output = <T as OptionCheckedDiv<InnerRhs>>::Output;
 
-    fn opt_checked_div(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_div(self, rhs: Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let (Some(inner_self), Some(inner_rhs)) = (self, rhs) {
             inner_self.opt_checked_div(inner_rhs)
         } else {
@@ -225,7 +225,7 @@ where
 {
     type Output = <T as OptionCheckedDiv<InnerRhs>>::Output;
 
-    fn opt_checked_div(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, CheckedError> {
+    fn opt_checked_div(self, rhs: &Option<InnerRhs>) -> Result<Option<Self::Output>, Error> {
         if let (Some(inner_self), Some(inner_rhs)) = (self, rhs.as_ref()) {
             inner_self.opt_checked_div(*inner_rhs)
         } else {
@@ -566,13 +566,13 @@ mod test {
         impl OptionCheckedDiv for MyInt {
             type Output = MyInt;
 
-            fn opt_checked_div(self, rhs: MyInt) -> Result<Option<Self::Output>, CheckedError> {
+            fn opt_checked_div(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
                 if rhs.0 == 0 {
-                    return Err(CheckedError::DivisionByZero);
+                    return Err(Error::DivisionByZero);
                 }
                 self.0
                     .checked_div(rhs.0)
-                    .ok_or(CheckedError::Overflow)
+                    .ok_or(Error::Overflow)
                     .map(|val| Some(MyInt(val)))
             }
         }
@@ -580,13 +580,13 @@ mod test {
         impl OptionCheckedDiv<i64> for MyInt {
             type Output = MyInt;
 
-            fn opt_checked_div(self, rhs: i64) -> Result<Option<Self::Output>, CheckedError> {
+            fn opt_checked_div(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
                 if rhs == 0 {
-                    return Err(CheckedError::DivisionByZero);
+                    return Err(Error::DivisionByZero);
                 }
                 self.0
                     .checked_div(rhs)
-                    .ok_or(CheckedError::Overflow)
+                    .ok_or(Error::Overflow)
                     .map(|val| Some(MyInt(val)))
             }
         }
@@ -595,49 +595,25 @@ mod test {
         assert_eq!(MY_10.opt_checked_div(SOME_5), Ok(SOME_2));
         assert_eq!(MY_0.opt_checked_div(&SOME_1), Ok(SOME_0));
         assert_eq!(MY_MAX.opt_checked_div(MY_2), Ok(SOME_HALF_MAX));
-        assert_eq!(
-            MY_MAX.opt_checked_div(MY_0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(
-            MY_MIN.opt_checked_div(MY_MINUS_1),
-            Err(CheckedError::Overflow)
-        );
+        assert_eq!(MY_MAX.opt_checked_div(MY_0), Err(Error::DivisionByZero));
+        assert_eq!(MY_MIN.opt_checked_div(MY_MINUS_1), Err(Error::Overflow));
 
         assert_eq!(SOME_2.opt_checked_div(MY_1), Ok(SOME_2));
         assert_eq!(SOME_10.opt_checked_div(SOME_2), Ok(SOME_5));
         assert_eq!(SOME_0.opt_checked_div(&SOME_1), Ok(SOME_0));
 
         assert_eq!(SOME_MAX.opt_checked_div(MY_2), Ok(SOME_HALF_MAX));
-        assert_eq!(
-            SOME_MAX.opt_checked_div(MY_0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(
-            SOME_MIN.opt_checked_div(MY_MINUS_1),
-            Err(CheckedError::Overflow)
-        );
-        assert_eq!(
-            SOME_MAX.opt_checked_div(0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(SOME_MIN.opt_checked_div(-1), Err(CheckedError::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_div(MY_0), Err(Error::DivisionByZero));
+        assert_eq!(SOME_MIN.opt_checked_div(MY_MINUS_1), Err(Error::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_div(0), Err(Error::DivisionByZero));
+        assert_eq!(SOME_MIN.opt_checked_div(-1), Err(Error::Overflow));
         assert_eq!(
             SOME_MAX.opt_checked_div(Some(0)),
-            Err(CheckedError::DivisionByZero)
+            Err(Error::DivisionByZero)
         );
-        assert_eq!(
-            SOME_MIN.opt_checked_div(Some(-1)),
-            Err(CheckedError::Overflow)
-        );
-        assert_eq!(
-            SOME_MAX.opt_checked_div(SOME_0),
-            Err(CheckedError::DivisionByZero)
-        );
-        assert_eq!(
-            SOME_MIN.opt_checked_div(SOME_MINUS_1),
-            Err(CheckedError::Overflow)
-        );
+        assert_eq!(SOME_MIN.opt_checked_div(Some(-1)), Err(Error::Overflow));
+        assert_eq!(SOME_MAX.opt_checked_div(SOME_0), Err(Error::DivisionByZero));
+        assert_eq!(SOME_MIN.opt_checked_div(SOME_MINUS_1), Err(Error::Overflow));
         assert_eq!(MY_MIN.opt_checked_div(NONE), Ok(None));
         assert_eq!(NONE.opt_checked_div(SOME_MIN), Ok(None));
     }

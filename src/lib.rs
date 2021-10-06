@@ -17,8 +17,8 @@ pub use add::{
     OptionWrappingAdd,
 };
 
-pub mod checked_error;
-pub use checked_error::CheckedError;
+pub mod error;
+pub use error::Error;
 
 pub mod div;
 pub use div::{
