@@ -1,11 +1,26 @@
+//! Traits for the addition [`OptionOperations`].
+
 use core::ops::{Add, AddAssign};
 
 use crate::{Error, OptionOperations};
 
-/// TODO: doc
+/// Trait for values and `Option`s addition.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionAdd<Option<InnerRhs>>` for `T`.
+/// - `OptionAdd<Rhs>` for `Option<T>`.
+/// - `OptionAdd<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `Add<Rhs>`.
 pub trait OptionAdd<Rhs, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the addition.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_add(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -79,8 +94,21 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s addition assignment.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionAddAssign<Option<InnerRhs>>` for `T`.
+/// - `OptionAddAssign<Rhs>` for `Option<T>`.
+/// - `OptionAddAssign<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `AddAssign<Rhs>`.
 pub trait OptionAddAssign<Rhs, InnerRhs = Rhs> {
+    /// Performs the addition assignment.
+    ///
+    /// `self` is unchanged if `rhs` is `None`.
     fn opt_add_assign(&mut self, rhs: Rhs);
 }
 
@@ -150,10 +178,25 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s checked addition.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionCheckedAdd<Option<InnerRhs>>` for `T`.
+/// - `OptionCheckedAdd<Rhs>` for `Option<T>`.
+/// - `OptionCheckedAdd<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `CheckedAdd` trait,
+/// users must provide the base implementation for the inner type.
 pub trait OptionCheckedAdd<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the checked addition.
+    ///
+    /// - Returns `Ok(Some(result))` if `result` could be computed.
+    /// - Returns `Ok(None)` if at least one argument is `None`.
+    /// - Returns `Err(Error::Overflow)` if an overflow occured.
     fn opt_checked_add(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
@@ -236,10 +279,32 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+impl OptionCheckedAdd for u64 {
+    type Output = Self;
+    fn opt_checked_add(self, rhs: Self) -> Result<Option<Self::Output>, Error> {
+        self.checked_add(rhs).ok_or(Error::Overflow).map(Some)
+    }
+}
+
+/// Trait for values and `Option`s overflowing addition.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionOverflowingAdd<Option<InnerRhs>>` for `T`.
+/// - `OptionOverflowingAdd<Rhs>` for `Option<T>`.
+/// - `OptionOverflowingAdd<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `OverflowingAdd`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingAdd<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Returns a tuple of the addition along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would
+    /// have occurred then the wrapped value is returned.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_overflowing_add(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -305,10 +370,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s saturating addition.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionSaturatingAdd<Option<InnerRhs>>` for `T`.
+/// - `OptionSaturatingAdd<Rhs>` for `Option<T>`.
+/// - `OptionSaturatingAdd<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `SaturatingAdd`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionSaturatingAdd<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the addition, saturating at the numeric bounds instead of
+    /// overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_saturating_add(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -374,10 +453,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s wrapping addition.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionWrappingAdd<Option<InnerRhs>>` for `T`.
+/// - `OptionWrappingAdd<Rhs>` for `Option<T>`.
+/// - `OptionWrappingAdd<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `WrappingAdd`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingAdd<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the addition, wrapping around at the numeric bounds
+    /// instead of overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_wrapping_add(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -442,6 +535,13 @@ where
 }
 
 // TODO impl on integers & time types
+
+impl OptionWrappingAdd for u64 {
+    type Output = Self;
+    fn opt_wrapping_add(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.wrapping_add(rhs))
+    }
+}
 
 #[cfg(test)]
 mod test {

@@ -1,11 +1,26 @@
+//! Traits for the multiplication [`OptionOperations`].
+
 use core::ops::{Mul, MulAssign};
 
 use crate::{Error, OptionOperations};
 
-/// TODO: doc
+/// Trait for values and `Option`s multiplication.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionMul<Option<InnerRhs>>` for `T`.
+/// - `OptionMul<Rhs>` for `Option<T>`.
+/// - `OptionMul<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `Mul<Rhs>`.
 pub trait OptionMul<Rhs, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the multiplication.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_mul(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -79,8 +94,21 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s multiplication assignment.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionMulAssign<Option<InnerRhs>>` for `T`.
+/// - `OptionMulAssign<Rhs>` for `Option<T>`.
+/// - `OptionMulAssign<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `MulAssign<Rhs>`.
 pub trait OptionMulAssign<Rhs, InnerRhs = Rhs> {
+    /// Performs the multiplication assignment.
+    ///
+    /// `self` is unchanged if `rhs` is `None`.
     fn opt_mul_assign(&mut self, rhs: Rhs);
 }
 
@@ -150,10 +178,25 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s checked multiplication.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionCheckedMul<Option<InnerRhs>>` for `T`.
+/// - `OptionCheckedMul<Rhs>` for `Option<T>`.
+/// - `OptionCheckedMul<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `CheckedMul` trait,
+/// users must provide the base implementation for the inner type.
 pub trait OptionCheckedMul<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the checked multiplication.
+    ///
+    /// - Returns `Ok(Some(result))` if `result` could be computed.
+    /// - Returns `Ok(None)` if at least one argument is `None`.
+    /// - Returns `Err(Error::Overflow)` if an overflow occured.
     fn opt_checked_mul(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
@@ -236,10 +279,25 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s overflowing multiplication.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionOverflowingMul<Option<InnerRhs>>` for `T`.
+/// - `OptionOverflowingMul<Rhs>` for `Option<T>`.
+/// - `OptionOverflowingMul<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `OverflowingMul`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingMul<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Returns a tuple of the multiplication along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would
+    /// have occurred then the wrapped value is returned.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_overflowing_mul(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -305,10 +363,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s saturating multiplication.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionSaturatingMul<Option<InnerRhs>>` for `T`.
+/// - `OptionSaturatingMul<Rhs>` for `Option<T>`.
+/// - `OptionSaturatingMul<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `SaturatingMul`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionSaturatingMul<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the multiplication, saturating at the numeric bounds instead of
+    /// overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_saturating_mul(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -374,10 +446,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s wrapping multiplication.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionWrappingMul<Option<InnerRhs>>` for `T`.
+/// - `OptionWrappingMul<Rhs>` for `Option<T>`.
+/// - `OptionWrappingMul<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `WrappingMul`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingMul<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the multiplication, wrapping around at the numeric bounds
+    /// instead of overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_wrapping_mul(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

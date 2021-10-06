@@ -1,3 +1,5 @@
+//! Trait for the order [`OptionOperations`].
+
 use core::cmp::Ordering;
 
 use crate::OptionOperations;
@@ -5,55 +7,81 @@ use crate::OptionOperations;
 /// Trait for values and `Option`s that can be compared for a sort-order.
 ///
 /// This implementation is mainly intended at working around the `PartialOrd`
-/// implementation for `Option`, which compares `Option`
+/// implementation for `Option`, which compares `Option`s
 /// depending on the order of declaration in the `enum`.
 ///
 /// ## `PartialOrd` implementation for `Option`
 ///
 /// ```
 /// # use core::cmp::Ordering;
-/// let some1 = Some(1);
-/// let none: Option<usize> = None;
+/// let some_0 = Some(0);
+/// let none: Option<u64> = None;
 ///
-/// assert_eq!(none.partial_cmp(&some1), Some(Ordering::Less));
-/// assert_eq!(some1.partial_cmp(&none), Some(Ordering::Greater));
+/// assert_eq!(none.partial_cmp(&some_0), Some(Ordering::Less));
+/// assert_eq!(some_0.partial_cmp(&none), Some(Ordering::Greater));
 /// ```
 ///
-/// ## Alternative behaviour
+/// ## Alternative behavior
 ///
-/// In some cases, we might consider the `None` reflects a value which is
-/// not defined and thus can not be compared with `Some(_)`.
+/// In some cases, we might consider that `None` reflects a value which
+/// is not defined and thus can not be compared with `Some(_)`.
 ///
 /// ```
 /// # use option_operations::{OptionOperations, OptionOrd};
-/// let some1 = Some(1);
-/// let none: Option<usize> = None;
-///
-/// assert_eq!(none.opt_cmp(&some1), None);
-/// assert_eq!(some1.opt_cmp(&none), None);
+/// # let some_0 = Some(0);
+/// # let none: Option<u64> = None;
+/// assert_eq!(none.opt_cmp(&some_0), None);
+/// assert_eq!(some_0.opt_cmp(&none), None);
 /// ```
 ///
 /// ## Implementations
 ///
-/// This `trait` is auto-implemented for all `PartialOrd` implementations
-/// of types which also implement the [`OptionOperations`] trait.
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionOrd<Option<InnerRhs>> for T`.
+/// - `OptionOrd<Rhs> for Option<T>`.
+/// - `OptionOrd<Option<InnerRhs>> for Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `PartialOrd<Rhs>`.
 pub trait OptionOrd<Rhs, InnerRhs = Rhs> {
+    /// Returns an ordering between `self` and `rhs` values if one exists.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_cmp(&self, rhs: Rhs) -> Option<Ordering>;
 
+    /// Tests whether `self` is less than `rhs`.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_lt(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs).map(|ord| matches!(ord, Ordering::Less))
     }
 
+    /// Tests whether `self` is less or equal to `rhs`.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_le(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs)
             .map(|ord| matches!(ord, Ordering::Less | Ordering::Equal))
     }
 
+    /// Tests whether `self` is greater than `rhs`.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_gt(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs)
             .map(|ord| matches!(ord, Ordering::Greater))
     }
 
+    /// Tests whether `self` is greater or equal to `rhs`.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_ge(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs)
             .map(|ord| matches!(ord, Ordering::Greater | Ordering::Equal))

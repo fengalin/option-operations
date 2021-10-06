@@ -1,11 +1,26 @@
+//! Traits for the division [`OptionOperations`].
+
 use core::ops::{Div, DivAssign};
 
 use crate::{Error, OptionOperations};
 
-/// TODO: doc
+/// Trait for values and `Option`s division.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionDiv<Option<InnerRhs>>` for `T`.
+/// - `OptionDiv<Rhs>` for `Option<T>`.
+/// - `OptionDiv<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `Div<Rhs>`.
 pub trait OptionDiv<Rhs, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the division.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -79,8 +94,21 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s division assignment.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionDivAssign<Option<InnerRhs>>` for `T`.
+/// - `OptionDivAssign<Rhs>` for `Option<T>`.
+/// - `OptionDivAssign<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `DivAssign<Rhs>`.
 pub trait OptionDivAssign<Rhs, InnerRhs = Rhs> {
+    /// Performs the division assignment.
+    ///
+    /// `self` is unchanged if `rhs` is `None`.
     fn opt_div_assign(&mut self, rhs: Rhs);
 }
 
@@ -150,10 +178,26 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s checked division.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionCheckedDiv<Option<InnerRhs>>` for `T`.
+/// - `OptionCheckedDiv<Rhs>` for `Option<T>`.
+/// - `OptionCheckedDiv<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `CheckedDiv` trait,
+/// users must provide the base implementation for the inner type.
 pub trait OptionCheckedDiv<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the checked division.
+    ///
+    /// - Returns `Ok(Some(result))` if `result` could be computed.
+    /// - Returns `Ok(None)` if at least one argument is `None`.
+    /// - Returns `Err(Error::DivisionByZero)` if `rhs` is zero.
+    /// - Returns `Err(Error::Overflow)` if an overflow occured.
     fn opt_checked_div(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
@@ -236,10 +280,25 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s overflowing division.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionOverflowingDiv<Option<InnerRhs>>` for `T`.
+/// - `OptionOverflowingDiv<Rhs>` for `Option<T>`.
+/// - `OptionOverflowingDiv<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `OverflowingDiv`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingDiv<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Returns a tuple of the division along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would
+    /// have occurred then `self` is returned.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_overflowing_div(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -305,10 +364,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s wrapping division.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionWrappingDiv<Option<InnerRhs>>` for `T`.
+/// - `OptionWrappingDiv<Rhs>` for `Option<T>`.
+/// - `OptionWrappingDiv<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `WrappingDiv`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingDiv<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the division, wrapping around at the numeric bounds
+    /// instead of overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_wrapping_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

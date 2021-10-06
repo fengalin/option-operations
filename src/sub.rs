@@ -1,11 +1,26 @@
+//! Traits for the substraction [`OptionOperations`].
+
 use core::ops::{Sub, SubAssign};
 
 use crate::{Error, OptionOperations};
 
-/// TODO: doc
+/// Trait for values and `Option`s substraction.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionSub<Option<InnerRhs>>` for `T`.
+/// - `OptionSub<Rhs>` for `Option<T>`.
+/// - `OptionSub<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `Sub<Rhs>`.
 pub trait OptionSub<Rhs, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the substraction.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_sub(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -79,8 +94,21 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s substraction assignment.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionSubAssign<Option<InnerRhs>>` for `T`.
+/// - `OptionSubAssign<Rhs>` for `Option<T>`.
+/// - `OptionSubAssign<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `SubAssign<Rhs>`.
 pub trait OptionSubAssign<Rhs, InnerRhs = Rhs> {
+    /// Performs the substraction assignment.
+    ///
+    /// `self` is unchanged if `rhs` is `None`.
     fn opt_sub_assign(&mut self, rhs: Rhs);
 }
 
@@ -150,10 +178,25 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s checked substraction.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionCheckedSub<Option<InnerRhs>>` for `T`.
+/// - `OptionCheckedSub<Rhs>` for `Option<T>`.
+/// - `OptionCheckedSub<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `CheckedSub` trait,
+/// users must provide the base implementation for the inner type.
 pub trait OptionCheckedSub<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the checked substraction.
+    ///
+    /// - Returns `Ok(Some(result))` if `result` could be computed.
+    /// - Returns `Ok(None)` if at least one argument is `None`.
+    /// - Returns `Err(Error::Overflow)` if an overflow occured.
     fn opt_checked_sub(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
@@ -236,10 +279,25 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s overflowing substraction.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionOverflowingSub<Option<InnerRhs>>` for `T`.
+/// - `OptionOverflowingSub<Rhs>` for `Option<T>`.
+/// - `OptionOverflowingSub<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `OverflowingSub`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingSub<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Returns a tuple of the substraction along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would
+    /// have occurred then the wrapped value is returned.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_overflowing_sub(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -305,10 +363,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s saturating substraction.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionSaturatingSub<Option<InnerRhs>>` for `T`.
+/// - `OptionSaturatingSub<Rhs>` for `Option<T>`.
+/// - `OptionSaturatingSub<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `SaturatingSub`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionSaturatingSub<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the substraction, saturating at the numeric bounds instead of
+    /// overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_saturating_sub(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -374,10 +446,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s wrapping substraction.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionWrappingSub<Option<InnerRhs>>` for `T`.
+/// - `OptionWrappingSub<Rhs>` for `Option<T>`.
+/// - `OptionWrappingSub<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `WrappingSub`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingSub<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the substraction, wrapping around at the numeric bounds
+    /// instead of overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_wrapping_sub(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

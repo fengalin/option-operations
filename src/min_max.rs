@@ -1,7 +1,34 @@
+//! Traits for the minimun and maximum [`OptionOperations`].
+
+// Required for doc
+#[allow(unused)]
+use crate::OptionOperations;
+
 use crate::OptionOrd;
 
+/// Trait for values and `Option`s that can be compared
+/// to get the minimum or maximum.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionMinMax<Option<InnerRhs>> for T`.
+/// - `OptionMinMax<Rhs> for Option<T>`.
+/// - `OptionMinMax<Option<InnerRhs>> for Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `OptionOrd<Rhs>`.
 pub trait OptionMinMax<Other, Inner = Other> {
+    /// Compares and returns the minimum of two values.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_min(self, other: Other) -> Option<Inner>;
+
+    /// Compares and returns the maximum of two values.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_max(self, other: Other) -> Option<Inner>;
 }
 

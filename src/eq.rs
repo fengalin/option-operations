@@ -1,8 +1,19 @@
+//! Trait for the equality [`OptionOperations`].
+
 use crate::OptionOperations;
 
+/// Trait for the equality [`OptionOperations`].
 pub trait OptionEq<Rhs, InnerRhs = Rhs> {
+    /// Tests whether `self` is equal to `other`.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_eq(&self, other: Rhs) -> Option<bool>;
 
+    /// Tests whether `self` is not equal to `other`.
+    ///
+    /// Returns `None` if they can't be compared, e.g. if
+    /// at most one argument is `None`.
     fn opt_ne(&self, other: Rhs) -> Option<bool> {
         self.opt_eq(other).map(|res| !res)
     }

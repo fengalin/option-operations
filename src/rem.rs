@@ -1,11 +1,26 @@
+//! Traits for the remainder [`OptionOperations`].
+
 use core::ops::{Rem, RemAssign};
 
 use crate::{Error, OptionOperations};
 
-/// TODO: doc
+/// Trait for values and `Option`s remainder.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionRem<Option<InnerRhs>>` for `T`.
+/// - `OptionRem<Rhs>` for `Option<T>`.
+/// - `OptionRem<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `Rem<Rhs>`.
 pub trait OptionRem<Rhs, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the remainder.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_rem(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -79,8 +94,21 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s remainder assignment.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionRemAssign<Option<InnerRhs>>` for `T`.
+/// - `OptionRemAssign<Rhs>` for `Option<T>`.
+/// - `OptionRemAssign<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// This trait is auto-implemented for [`OptionOperations`] types
+/// implementing `RemAssign<Rhs>`.
 pub trait OptionRemAssign<Rhs, InnerRhs = Rhs> {
+    /// Performs the remainder assignment.
+    ///
+    /// `self` is unchanged if `rhs` is `None`.
     fn opt_rem_assign(&mut self, rhs: Rhs);
 }
 
@@ -150,10 +178,26 @@ where
     }
 }
 
-/// TODO: doc
+/// Trait for values and `Option`s checked remainder.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionCheckedRem<Option<InnerRhs>>` for `T`.
+/// - `OptionCheckedRem<Rhs>` for `Option<T>`.
+/// - `OptionCheckedRem<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `CheckedRem` trait,
+/// users must provide the base implementation for the inner type.
 pub trait OptionCheckedRem<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the checked remainder.
+    ///
+    /// - Returns `Ok(Some(result))` if `result` could be computed.
+    /// - Returns `Ok(None)` if at least one argument is `None`.
+    /// - Returns `Err(Error::DivisionByZero)` if `rhs` is zero.
+    /// - Returns `Err(Error::Overflow)` if an overflow occured.
     fn opt_checked_rem(self, rhs: Rhs) -> Result<Option<Self::Output>, Error>;
 }
 
@@ -236,10 +280,25 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s overflowing remainder.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionOverflowingRem<Option<InnerRhs>>` for `T`.
+/// - `OptionOverflowingRem<Rhs>` for `Option<T>`.
+/// - `OptionOverflowingRem<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `OverflowingRem`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingRem<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Returns a tuple of the remainder along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would
+    /// have occurred then `self` is returned.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_overflowing_rem(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -305,10 +364,24 @@ where
 
 // TODO impl on integers & time types
 
-/// TODO: doc
+/// Trait for values and `Option`s wrapping remainder.
+///
+/// Implementing this type leads to the following auto-implementations:
+///
+/// - `OptionWrappingRem<Option<InnerRhs>>` for `T`.
+/// - `OptionWrappingRem<Rhs>` for `Option<T>`.
+/// - `OptionWrappingRem<Option<InnerRhs>>` for `Option<T>`.
+/// - ... and some variants with references.
+///
+/// Note that since the `std` library doesn't define any `WrappingRem`
+/// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingRem<Rhs = Self, InnerRhs = Rhs> {
     type Output;
 
+    /// Computes the remainder, wrapping around at the numeric bounds
+    /// instead of overflowing.
+    ///
+    /// Returns `None` if at least one argument is `None`.
     fn opt_wrapping_rem(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
