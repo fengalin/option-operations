@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  hygiene:
+    name: Hygiene
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: fmt
+      run: cargo fmt -- --check
+    - name: clippy
+      run: cargo clippy --tests
+
+  build:
+    name: "Build & Tests"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --verbose
+    - name: Tests
+      run: cargo test --verbose
