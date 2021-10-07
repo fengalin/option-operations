@@ -1,5 +1,3 @@
-#![no_std]
-
 //! `option-operations` provides traits and auto-implementations to
 //! improve arithmetic operations usability when dealing with `Option`s.
 //!
@@ -56,6 +54,8 @@
 //! assert_eq!(some_0.opt_cmp(&none), None);
 //! ```
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
 /// Trait for inner types participating in `option-operations`.
 ///
 /// The purpose of this trait is twofold:
@@ -68,11 +68,10 @@ pub trait OptionOperations {}
 impl<T: OptionOperations> OptionOperations for &T {}
 impl<T: OptionOperations> OptionOperations for &mut T {}
 
-impl OptionOperations for usize {}
-impl OptionOperations for u8 {}
-impl OptionOperations for u64 {}
-// FIXME impl for other numeric types
-// FIXME impl for Duration & Instant
+#[macro_use]
+mod macros;
+
+impl_for_all!(OptionOperations);
 
 pub mod add;
 pub use add::{

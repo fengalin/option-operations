@@ -278,7 +278,15 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionCheckedRem, {
+    type Output = Self;
+    fn opt_checked_rem(self, rhs: Self) -> Result<Option<Self::Output>, Error> {
+        if rhs == 0 {
+            return Err(Error::DivisionByZero);
+        }
+        self.checked_rem(rhs).ok_or(Error::Overflow).map(Some)
+    }
+});
 
 /// Trait for values and `Option`s overflowing remainder.
 ///
@@ -362,7 +370,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionOverflowingRem, {
+    type Output = Self;
+    fn opt_overflowing_rem(self, rhs: Self) -> Option<(Self::Output, bool)> {
+        Some(self.overflowing_rem(rhs))
+    }
+});
 
 /// Trait for values and `Option`s wrapping remainder.
 ///
@@ -445,7 +458,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionWrappingRem, {
+    type Output = Self;
+    fn opt_wrapping_rem(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.wrapping_rem(rhs))
+    }
+});
 
 #[cfg(test)]
 mod test {
@@ -636,29 +654,15 @@ mod test {
     fn checked_rem() {
         impl OptionCheckedRem for MyInt {
             type Output = MyInt;
-
             fn opt_checked_rem(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                if rhs.0 == 0 {
-                    return Err(Error::DivisionByZero);
-                }
-                self.0
-                    .checked_rem(rhs.0)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_rem(rhs.0).map(|ok| ok.map(MyInt))
             }
         }
 
         impl OptionCheckedRem<i64> for MyInt {
             type Output = MyInt;
-
             fn opt_checked_rem(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
-                if rhs == 0 {
-                    return Err(Error::DivisionByZero);
-                }
-                self.0
-                    .checked_rem(rhs)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_rem(rhs).map(|ok| ok.map(MyInt))
             }
         }
 
@@ -693,19 +697,19 @@ mod test {
     fn overflowing_rem() {
         impl OptionOverflowingRem for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_rem(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_rem(rhs.0);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_rem(rhs.0)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
         impl OptionOverflowingRem<i64> for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_rem(self, rhs: i64) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_rem(rhs);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_rem(rhs)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
@@ -726,36 +730,33 @@ mod test {
         assert_eq!(NONE.opt_overflowing_rem(MY_MIN), None);
     }
 
-    /*
     #[test]
     fn wrapping_rem() {
         impl OptionWrappingRem for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_rem(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_rem(rhs.0)))
+                self.0.opt_wrapping_rem(rhs.0).map(MyInt)
             }
         }
 
         impl OptionWrappingRem<i64> for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_rem(self, rhs: i64) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_rem(rhs)))
+                self.0.opt_wrapping_rem(rhs).map(MyInt)
             }
         }
 
-        assert_eq!(MY_2.opt_wrapping_rem(MY_1), SOME_2);
+        assert_eq!(MY_2.opt_wrapping_rem(MY_1), SOME_0);
         assert_eq!(MY_0.opt_wrapping_rem(MY_1), SOME_0);
-        assert_eq!(MY_MIN.opt_wrapping_rem(MY_MINUS_1), SOME_MIN);
-        assert_eq!(SOME_MIN.opt_wrapping_rem(MY_MINUS_1), SOME_MIN);
-        assert_eq!(SOME_MIN.opt_wrapping_rem(-1), SOME_MIN);
-        assert_eq!(SOME_MIN.opt_wrapping_rem(Some(-1)), SOME_MIN);
-        assert_eq!(SOME_MIN.opt_wrapping_rem(&Some(-1)), SOME_MIN);
-        assert_eq!(MY_MIN.opt_wrapping_rem(SOME_MINUS_1), SOME_MIN);
-        assert_eq!(MY_MIN.opt_wrapping_rem(&SOME_MINUS_1), SOME_MIN);
+        assert_eq!(MY_MAX.opt_wrapping_rem(MY_2), SOME_1);
+        assert_eq!(MY_MIN.opt_wrapping_rem(MY_MINUS_1), SOME_0);
+        assert_eq!(SOME_MIN.opt_wrapping_rem(MY_MINUS_1), SOME_0);
+        assert_eq!(SOME_MIN.opt_wrapping_rem(-1), SOME_0);
+        assert_eq!(SOME_MIN.opt_wrapping_rem(Some(-1)), SOME_0);
+        assert_eq!(SOME_MIN.opt_wrapping_rem(&Some(-1)), SOME_0);
+        assert_eq!(MY_MIN.opt_wrapping_rem(SOME_MINUS_1), SOME_0);
+        assert_eq!(MY_MIN.opt_wrapping_rem(&SOME_MINUS_1), SOME_0,);
         assert_eq!(MY_MIN.opt_wrapping_rem(NONE), None);
         assert_eq!(NONE.opt_wrapping_rem(MY_MIN), None);
     }
-    */
 }

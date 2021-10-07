@@ -278,7 +278,25 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionCheckedDiv, {
+    type Output = Self;
+    fn opt_checked_div(self, rhs: Self) -> Result<Option<Self::Output>, Error> {
+        if rhs == 0 {
+            return Err(Error::DivisionByZero);
+        }
+        self.checked_div(rhs).ok_or(Error::Overflow).map(Some)
+    }
+});
+
+impl OptionCheckedDiv<u32> for core::time::Duration {
+    type Output = Self;
+    fn opt_checked_div(self, rhs: u32) -> Result<Option<Self::Output>, Error> {
+        if rhs == 0 {
+            return Err(Error::DivisionByZero);
+        }
+        self.checked_div(rhs).ok_or(Error::Overflow).map(Some)
+    }
+}
 
 /// Trait for values and `Option`s overflowing division.
 ///
@@ -362,7 +380,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionOverflowingDiv, {
+    type Output = Self;
+    fn opt_overflowing_div(self, rhs: Self) -> Option<(Self::Output, bool)> {
+        Some(self.overflowing_div(rhs))
+    }
+});
 
 /// Trait for values and `Option`s wrapping division.
 ///
@@ -445,7 +468,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionWrappingDiv, {
+    type Output = Self;
+    fn opt_wrapping_div(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.wrapping_div(rhs))
+    }
+});
 
 #[cfg(test)]
 mod test {
@@ -638,29 +666,15 @@ mod test {
     fn checked_div() {
         impl OptionCheckedDiv for MyInt {
             type Output = MyInt;
-
             fn opt_checked_div(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                if rhs.0 == 0 {
-                    return Err(Error::DivisionByZero);
-                }
-                self.0
-                    .checked_div(rhs.0)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_div(rhs.0).map(|ok| ok.map(MyInt))
             }
         }
 
         impl OptionCheckedDiv<i64> for MyInt {
             type Output = MyInt;
-
             fn opt_checked_div(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
-                if rhs == 0 {
-                    return Err(Error::DivisionByZero);
-                }
-                self.0
-                    .checked_div(rhs)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_div(rhs).map(|ok| ok.map(MyInt))
             }
         }
 
@@ -695,19 +709,19 @@ mod test {
     fn overflowing_div() {
         impl OptionOverflowingDiv for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_div(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_div(rhs.0);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_div(rhs.0)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
         impl OptionOverflowingDiv<i64> for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_div(self, rhs: i64) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_div(rhs);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_div(rhs)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
@@ -741,17 +755,15 @@ mod test {
     fn wrapping_div() {
         impl OptionWrappingDiv for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_div(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_div(rhs.0)))
+                self.0.opt_wrapping_div(rhs.0).map(MyInt)
             }
         }
 
         impl OptionWrappingDiv<i64> for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_div(self, rhs: i64) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_div(rhs)))
+                self.0.opt_wrapping_div(rhs).map(MyInt)
             }
         }
 

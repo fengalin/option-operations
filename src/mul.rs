@@ -277,7 +277,19 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionCheckedMul, {
+    type Output = Self;
+    fn opt_checked_mul(self, rhs: Self) -> Result<Option<Self::Output>, Error> {
+        self.checked_mul(rhs).ok_or(Error::Overflow).map(Some)
+    }
+});
+
+impl OptionCheckedMul<u32> for core::time::Duration {
+    type Output = Self;
+    fn opt_checked_mul(self, rhs: u32) -> Result<Option<Self::Output>, Error> {
+        self.checked_mul(rhs).ok_or(Error::Overflow).map(Some)
+    }
+}
 
 /// Trait for values and `Option`s overflowing multiplication.
 ///
@@ -361,7 +373,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionOverflowingMul, {
+    type Output = Self;
+    fn opt_overflowing_mul(self, rhs: Self) -> Option<(Self::Output, bool)> {
+        Some(self.overflowing_mul(rhs))
+    }
+});
 
 /// Trait for values and `Option`s saturating multiplication.
 ///
@@ -444,7 +461,19 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionSaturatingMul, {
+    type Output = Self;
+    fn opt_saturating_mul(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.saturating_mul(rhs))
+    }
+});
+
+impl OptionSaturatingMul<u32> for core::time::Duration {
+    type Output = Self;
+    fn opt_saturating_mul(self, rhs: u32) -> Option<Self::Output> {
+        Some(self.saturating_mul(rhs))
+    }
+}
 
 /// Trait for values and `Option`s wrapping multiplication.
 ///
@@ -527,7 +556,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionWrappingMul, {
+    type Output = Self;
+    fn opt_wrapping_mul(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.wrapping_mul(rhs))
+    }
+});
 
 #[cfg(test)]
 mod test {
@@ -697,23 +731,15 @@ mod test {
     fn checked_mul() {
         impl OptionCheckedMul for MyInt {
             type Output = MyInt;
-
             fn opt_checked_mul(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0
-                    .checked_mul(rhs.0)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_mul(rhs.0).map(|ok| ok.map(MyInt))
             }
         }
 
         impl OptionCheckedMul<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_checked_mul(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
-                self.0
-                    .checked_mul(rhs)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_mul(rhs).map(|ok| ok.map(MyInt))
             }
         }
 
@@ -740,17 +766,15 @@ mod test {
     fn saturating_mul() {
         impl OptionSaturatingMul for MyInt {
             type Output = MyInt;
-
             fn opt_saturating_mul(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.saturating_mul(rhs.0)))
+                self.0.opt_saturating_mul(rhs.0).map(MyInt)
             }
         }
 
         impl OptionSaturatingMul<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_saturating_mul(self, rhs: u64) -> Option<Self::Output> {
-                Some(MyInt(self.0.saturating_mul(rhs)))
+                self.0.opt_saturating_mul(rhs).map(MyInt)
             }
         }
 
@@ -771,19 +795,19 @@ mod test {
     fn overflowing_mul() {
         impl OptionOverflowingMul for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_mul(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_mul(rhs.0);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_mul(rhs.0)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
         impl OptionOverflowingMul<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_mul(self, rhs: u64) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_mul(rhs);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_mul(rhs)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
@@ -825,17 +849,15 @@ mod test {
     fn wrapping_mul() {
         impl OptionWrappingMul for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_mul(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_mul(rhs.0)))
+                self.0.opt_wrapping_mul(rhs.0).map(MyInt)
             }
         }
 
         impl OptionWrappingMul<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_mul(self, rhs: u64) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_mul(rhs)))
+                self.0.opt_wrapping_mul(rhs).map(MyInt)
             }
         }
 

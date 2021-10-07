@@ -277,11 +277,25 @@ where
     }
 }
 
-// TODO impl on integers & time types
-
-impl OptionCheckedAdd for u64 {
+impl_for_ints_and_duration!(OptionCheckedAdd, {
     type Output = Self;
     fn opt_checked_add(self, rhs: Self) -> Result<Option<Self::Output>, Error> {
+        self.checked_add(rhs).ok_or(Error::Overflow).map(Some)
+    }
+});
+
+#[cfg(feature = "std")]
+impl OptionCheckedAdd<std::time::Duration> for std::time::Instant {
+    type Output = Self;
+    fn opt_checked_add(self, rhs: std::time::Duration) -> Result<Option<Self::Output>, Error> {
+        self.checked_add(rhs).ok_or(Error::Overflow).map(Some)
+    }
+}
+
+#[cfg(feature = "std")]
+impl OptionCheckedAdd<std::time::Duration> for std::time::SystemTime {
+    type Output = Self;
+    fn opt_checked_add(self, rhs: std::time::Duration) -> Result<Option<Self::Output>, Error> {
         self.checked_add(rhs).ok_or(Error::Overflow).map(Some)
     }
 }
@@ -368,7 +382,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionOverflowingAdd, {
+    type Output = Self;
+    fn opt_overflowing_add(self, rhs: Self) -> Option<(Self::Output, bool)> {
+        Some(self.overflowing_add(rhs))
+    }
+});
 
 /// Trait for values and `Option`s saturating addition.
 ///
@@ -451,7 +470,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints_and_duration!(OptionSaturatingAdd, {
+    type Output = Self;
+    fn opt_saturating_add(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.saturating_add(rhs))
+    }
+});
 
 /// Trait for values and `Option`s wrapping addition.
 ///
@@ -534,14 +558,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
-
-impl OptionWrappingAdd for u64 {
+impl_for_ints!(OptionWrappingAdd, {
     type Output = Self;
     fn opt_wrapping_add(self, rhs: Self) -> Option<Self::Output> {
         Some(self.wrapping_add(rhs))
     }
-}
+});
 
 #[cfg(test)]
 mod test {
@@ -691,23 +713,15 @@ mod test {
     fn checked_add() {
         impl OptionCheckedAdd for MyInt {
             type Output = MyInt;
-
             fn opt_checked_add(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0
-                    .checked_add(rhs.0)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_add(rhs.0).map(|ok| ok.map(MyInt))
             }
         }
 
         impl OptionCheckedAdd<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_checked_add(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
-                self.0
-                    .checked_add(rhs)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_add(rhs).map(|ok| ok.map(MyInt))
             }
         }
 
@@ -732,17 +746,15 @@ mod test {
     fn saturating_add() {
         impl OptionSaturatingAdd for MyInt {
             type Output = MyInt;
-
             fn opt_saturating_add(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.saturating_add(rhs.0)))
+                self.0.opt_saturating_add(rhs.0).map(MyInt)
             }
         }
 
         impl OptionSaturatingAdd<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_saturating_add(self, rhs: u64) -> Option<Self::Output> {
-                Some(MyInt(self.0.saturating_add(rhs)))
+                self.0.opt_saturating_add(rhs).map(MyInt)
             }
         }
 
@@ -762,19 +774,19 @@ mod test {
     fn overflowing_add() {
         impl OptionOverflowingAdd for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_add(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_add(rhs.0);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_add(rhs.0)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
         impl OptionOverflowingAdd<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_add(self, rhs: u64) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_add(rhs);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_add(rhs)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
@@ -794,17 +806,15 @@ mod test {
     fn wrapping_add() {
         impl OptionWrappingAdd for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_add(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_add(rhs.0)))
+                self.0.opt_wrapping_add(rhs.0).map(MyInt)
             }
         }
 
         impl OptionWrappingAdd<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_add(self, rhs: u64) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_add(rhs)))
+                self.0.opt_wrapping_add(rhs).map(MyInt)
             }
         }
 

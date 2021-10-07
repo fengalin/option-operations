@@ -277,7 +277,28 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints_and_duration!(OptionCheckedSub, {
+    type Output = Self;
+    fn opt_checked_sub(self, rhs: Self) -> Result<Option<Self::Output>, Error> {
+        self.checked_sub(rhs).ok_or(Error::Overflow).map(Some)
+    }
+});
+
+#[cfg(feature = "std")]
+impl OptionCheckedSub<std::time::Duration> for std::time::Instant {
+    type Output = Self;
+    fn opt_checked_sub(self, rhs: std::time::Duration) -> Result<Option<Self::Output>, Error> {
+        self.checked_sub(rhs).ok_or(Error::Overflow).map(Some)
+    }
+}
+
+#[cfg(feature = "std")]
+impl OptionCheckedSub<std::time::Duration> for std::time::SystemTime {
+    type Output = Self;
+    fn opt_checked_sub(self, rhs: std::time::Duration) -> Result<Option<Self::Output>, Error> {
+        self.checked_sub(rhs).ok_or(Error::Overflow).map(Some)
+    }
+}
 
 /// Trait for values and `Option`s overflowing substraction.
 ///
@@ -361,7 +382,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionOverflowingSub, {
+    type Output = Self;
+    fn opt_overflowing_sub(self, rhs: Self) -> Option<(Self::Output, bool)> {
+        Some(self.overflowing_sub(rhs))
+    }
+});
 
 /// Trait for values and `Option`s saturating substraction.
 ///
@@ -444,7 +470,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints_and_duration!(OptionSaturatingSub, {
+    type Output = Self;
+    fn opt_saturating_sub(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.saturating_sub(rhs))
+    }
+});
 
 /// Trait for values and `Option`s wrapping substraction.
 ///
@@ -527,7 +558,12 @@ where
     }
 }
 
-// TODO impl on integers & time types
+impl_for_ints!(OptionWrappingSub, {
+    type Output = Self;
+    fn opt_wrapping_sub(self, rhs: Self) -> Option<Self::Output> {
+        Some(self.wrapping_sub(rhs))
+    }
+});
 
 #[cfg(test)]
 mod test {
@@ -679,23 +715,15 @@ mod test {
     fn checked_sub() {
         impl OptionCheckedSub for MyInt {
             type Output = MyInt;
-
             fn opt_checked_sub(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0
-                    .checked_sub(rhs.0)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_sub(rhs.0).map(|ok| ok.map(MyInt))
             }
         }
 
         impl OptionCheckedSub<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_checked_sub(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
-                self.0
-                    .checked_sub(rhs)
-                    .ok_or(Error::Overflow)
-                    .map(|val| Some(MyInt(val)))
+                self.0.opt_checked_sub(rhs).map(|ok| ok.map(MyInt))
             }
         }
 
@@ -720,17 +748,15 @@ mod test {
     fn saturating_sub() {
         impl OptionSaturatingSub for MyInt {
             type Output = MyInt;
-
             fn opt_saturating_sub(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.saturating_sub(rhs.0)))
+                self.0.opt_saturating_sub(rhs.0).map(MyInt)
             }
         }
 
         impl OptionSaturatingSub<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_saturating_sub(self, rhs: u64) -> Option<Self::Output> {
-                Some(MyInt(self.0.saturating_sub(rhs)))
+                self.0.opt_saturating_sub(rhs).map(MyInt)
             }
         }
 
@@ -750,19 +776,19 @@ mod test {
     fn overflowing_sub() {
         impl OptionOverflowingSub for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_sub(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_sub(rhs.0);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_sub(rhs.0)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
         impl OptionOverflowingSub<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_overflowing_sub(self, rhs: u64) -> Option<(Self::Output, bool)> {
-                let ret = self.0.overflowing_sub(rhs);
-                Some((MyInt(ret.0), ret.1))
+                self.0
+                    .opt_overflowing_sub(rhs)
+                    .map(|(val, flag)| (MyInt(val), flag))
             }
         }
 
@@ -782,17 +808,15 @@ mod test {
     fn wrapping_sub() {
         impl OptionWrappingSub for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_sub(self, rhs: MyInt) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_sub(rhs.0)))
+                self.0.opt_wrapping_sub(rhs.0).map(MyInt)
             }
         }
 
         impl OptionWrappingSub<u64> for MyInt {
             type Output = MyInt;
-
             fn opt_wrapping_sub(self, rhs: u64) -> Option<Self::Output> {
-                Some(MyInt(self.0.wrapping_sub(rhs)))
+                self.0.opt_wrapping_sub(rhs).map(MyInt)
             }
         }
 
