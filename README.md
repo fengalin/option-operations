@@ -5,7 +5,7 @@ improve arithmetic operations usability when dealing with `Option`s.
 
 ## Example
 
-Dealing with two `Option`s, can lead to verbose espressions:
+Dealing with two `Option`s, can lead to verbose expressions:
 
 ``` rust
 let lhs = Some(1u64);
@@ -17,7 +17,7 @@ assert_eq!(
 );
 ```
 
-Thanks to the trait [`OptionWrappingAdd`] we can write:
+Thanks to the trait `OptionWrappingAdd` we can write:
 
 ``` rust
 assert_eq!(

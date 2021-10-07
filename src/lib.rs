@@ -5,7 +5,7 @@
 //!
 //! ## Example
 //!
-//! Dealing with two `Option`s, can lead to verbose espressions:
+//! Dealing with two `Option`s, can lead to verbose expressions:
 //!
 //! ```
 //! let lhs = Some(1u64);
