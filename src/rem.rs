@@ -21,6 +21,10 @@ pub trait OptionRem<Rhs, InnerRhs = Rhs> {
     /// Computes the remainder.
     ///
     /// Returns `None` if at least one argument is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_rem(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -109,6 +113,10 @@ pub trait OptionRemAssign<Rhs, InnerRhs = Rhs> {
     /// Performs the remainder assignment.
     ///
     /// `self` is unchanged if `rhs` is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_rem_assign(&mut self, rhs: Rhs);
 }
 
@@ -307,6 +315,10 @@ pub trait OptionOverflowingRem<Rhs = Self, InnerRhs = Rhs> {
     /// have occurred then `self` is returned.
     ///
     /// Returns `None` if at least one argument is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_overflowing_rem(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -395,6 +407,10 @@ pub trait OptionWrappingRem<Rhs = Self, InnerRhs = Rhs> {
     /// instead of overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_wrapping_rem(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

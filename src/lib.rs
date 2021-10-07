@@ -1,7 +1,7 @@
 //! `option-operations` provides traits and auto-implementations to
 //! improve arithmetic operations usability when dealing with `Option`s.
 //!
-//! ## Example
+//! # Example
 //!
 //! Dealing with two `Option`s, can lead to verbose expressions:
 //!
@@ -44,7 +44,7 @@
 //! );
 //! ```
 //!
-//! ## Alternative to `PartialOrd` for `Option<T>`
+//! # Alternative to `PartialOrd` for `Option<T>`
 //!
 //! Another purpose is to workaround the `PartiaOrd` implementation
 //! for `Option<T>`, which uses the declaration order of the variants

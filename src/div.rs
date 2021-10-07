@@ -21,6 +21,10 @@ pub trait OptionDiv<Rhs, InnerRhs = Rhs> {
     /// Computes the division.
     ///
     /// Returns `None` if at least one argument is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -109,6 +113,10 @@ pub trait OptionDivAssign<Rhs, InnerRhs = Rhs> {
     /// Performs the division assignment.
     ///
     /// `self` is unchanged if `rhs` is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_div_assign(&mut self, rhs: Rhs);
 }
 
@@ -317,6 +325,10 @@ pub trait OptionOverflowingDiv<Rhs = Self, InnerRhs = Rhs> {
     /// have occurred then `self` is returned.
     ///
     /// Returns `None` if at least one argument is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_overflowing_div(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -405,6 +417,10 @@ pub trait OptionWrappingDiv<Rhs = Self, InnerRhs = Rhs> {
     /// instead of overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    ///
+    /// # Panics
+    ///
+    /// Most implementations will panic if `rhs` is `0`.
     fn opt_wrapping_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
