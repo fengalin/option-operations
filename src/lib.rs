@@ -1,7 +1,7 @@
 #![no_std]
 
-//! `option-operations` provide traits and auto-implementations to
-//! improve usability when dealing with `Option`s.
+//! `option-operations` provides traits and auto-implementations to
+//! improve arithmetic operations usability when dealing with `Option`s.
 //!
 //! ## Example
 //!
@@ -33,7 +33,7 @@
 //!
 //! Another purpose is to workaround the `PartiaOrd` implementation
 //! for `Option<T>`, which uses the declaration order of the variants
-//! for `Option`. `None` appearing before `Some(_)`, this results in
+//! for `Option`. `None` appearing before `Some(_)`, it results in
 //! the following behavior:
 //!
 //! ```
