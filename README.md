@@ -26,6 +26,20 @@ assert_eq!(
 );
 ```
 
+The trait can also be used with the inner type:
+
+``` rust
+assert_eq!(
+    lhs.opt_wrapping_add(u64::MAX),
+    Some(0),
+);
+
+assert_eq!(
+    1.opt_wrapping_add(rhs),
+    Some(0),
+);
+```
+
 ## Alternative to `PartialOrd` for `Option<T>`
 
 Another purpose is to workaround the `PartiaOrd` implementation
