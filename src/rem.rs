@@ -25,6 +25,7 @@ pub trait OptionRem<Rhs, InnerRhs = Rhs> {
     /// # Panics
     ///
     /// Most implementations will panic if `rhs` is `0`.
+    #[must_use]
     fn opt_rem(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -319,6 +320,7 @@ pub trait OptionOverflowingRem<Rhs = Self, InnerRhs = Rhs> {
     /// # Panics
     ///
     /// Most implementations will panic if `rhs` is `0`.
+    #[must_use]
     fn opt_overflowing_rem(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 

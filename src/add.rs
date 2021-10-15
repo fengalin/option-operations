@@ -21,6 +21,7 @@ pub trait OptionAdd<Rhs, InnerRhs = Rhs> {
     /// Computes the addition.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_add(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -319,6 +320,7 @@ pub trait OptionOverflowingAdd<Rhs = Self, InnerRhs = Rhs> {
     /// have occurred then the wrapped value is returned.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_overflowing_add(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -407,6 +409,7 @@ pub trait OptionSaturatingAdd<Rhs = Self, InnerRhs = Rhs> {
     /// overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_saturating_add(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -495,6 +498,7 @@ pub trait OptionWrappingAdd<Rhs = Self, InnerRhs = Rhs> {
     /// instead of overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_wrapping_add(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

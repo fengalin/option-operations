@@ -21,6 +21,7 @@ pub trait OptionSub<Rhs, InnerRhs = Rhs> {
     /// Computes the substraction.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_sub(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -319,6 +320,7 @@ pub trait OptionOverflowingSub<Rhs = Self, InnerRhs = Rhs> {
     /// have occurred then the wrapped value is returned.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_overflowing_sub(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -407,6 +409,7 @@ pub trait OptionSaturatingSub<Rhs = Self, InnerRhs = Rhs> {
     /// overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_saturating_sub(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -495,6 +498,7 @@ pub trait OptionWrappingSub<Rhs = Self, InnerRhs = Rhs> {
     /// instead of overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_wrapping_sub(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

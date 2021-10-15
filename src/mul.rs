@@ -21,6 +21,7 @@ pub trait OptionMul<Rhs, InnerRhs = Rhs> {
     /// Computes the multiplication.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_mul(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -310,6 +311,7 @@ pub trait OptionOverflowingMul<Rhs = Self, InnerRhs = Rhs> {
     /// have occurred then the wrapped value is returned.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_overflowing_mul(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -398,6 +400,7 @@ pub trait OptionSaturatingMul<Rhs = Self, InnerRhs = Rhs> {
     /// overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_saturating_mul(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -493,6 +496,7 @@ pub trait OptionWrappingMul<Rhs = Self, InnerRhs = Rhs> {
     /// instead of overflowing.
     ///
     /// Returns `None` if at least one argument is `None`.
+    #[must_use]
     fn opt_wrapping_mul(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

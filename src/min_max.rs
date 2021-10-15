@@ -23,12 +23,14 @@ pub trait OptionMinMax<Other, Inner = Other> {
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_min(self, other: Other) -> Option<Inner>;
 
     /// Compares and returns the maximum of two values.
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_max(self, other: Other) -> Option<Inner>;
 }
 

@@ -18,11 +18,13 @@ pub enum Error {
 
 impl Error {
     /// Returns `true` if this [`Error`] results from a division by zero.
+    #[must_use]
     pub fn is_division_by_zero(&self) -> bool {
         matches!(self, Error::DivisionByZero)
     }
 
     /// Returns `true` if this [`Error`] results from an overflow.
+    #[must_use]
     pub fn is_overflow(&self) -> bool {
         matches!(self, Error::Overflow)
     }

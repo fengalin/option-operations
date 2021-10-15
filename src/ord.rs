@@ -50,12 +50,14 @@ pub trait OptionOrd<Rhs, InnerRhs = Rhs> {
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_cmp(&self, rhs: Rhs) -> Option<Ordering>;
 
     /// Tests whether `self` is less than `rhs`.
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_lt(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs).map(|ord| matches!(ord, Ordering::Less))
     }
@@ -64,6 +66,7 @@ pub trait OptionOrd<Rhs, InnerRhs = Rhs> {
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_le(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs)
             .map(|ord| matches!(ord, Ordering::Less | Ordering::Equal))
@@ -73,6 +76,7 @@ pub trait OptionOrd<Rhs, InnerRhs = Rhs> {
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_gt(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs)
             .map(|ord| matches!(ord, Ordering::Greater))
@@ -82,6 +86,7 @@ pub trait OptionOrd<Rhs, InnerRhs = Rhs> {
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_ge(&self, rhs: Rhs) -> Option<bool> {
         self.opt_cmp(rhs)
             .map(|ord| matches!(ord, Ordering::Greater | Ordering::Equal))

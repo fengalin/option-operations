@@ -8,12 +8,14 @@ pub trait OptionEq<Rhs, InnerRhs = Rhs> {
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_eq(&self, other: Rhs) -> Option<bool>;
 
     /// Tests whether `self` is not equal to `other`.
     ///
     /// Returns `None` if they can't be compared, e.g. if
     /// at most one argument is `None`.
+    #[must_use]
     fn opt_ne(&self, other: Rhs) -> Option<bool> {
         self.opt_eq(other).map(|res| !res)
     }

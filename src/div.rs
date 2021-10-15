@@ -25,6 +25,7 @@ pub trait OptionDiv<Rhs, InnerRhs = Rhs> {
     /// # Panics
     ///
     /// Most implementations will panic if `rhs` is `0`.
+    #[must_use]
     fn opt_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
@@ -329,6 +330,7 @@ pub trait OptionOverflowingDiv<Rhs = Self, InnerRhs = Rhs> {
     /// # Panics
     ///
     /// Most implementations will panic if `rhs` is `0`.
+    #[must_use]
     fn opt_overflowing_div(self, rhs: Rhs) -> Option<(Self::Output, bool)>;
 }
 
@@ -421,6 +423,7 @@ pub trait OptionWrappingDiv<Rhs = Self, InnerRhs = Rhs> {
     /// # Panics
     ///
     /// Most implementations will panic if `rhs` is `0`.
+    #[must_use]
     fn opt_wrapping_div(self, rhs: Rhs) -> Option<Self::Output>;
 }
 
