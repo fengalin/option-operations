@@ -16,6 +16,7 @@ use crate::{Error, OptionOperations};
 /// This trait is auto-implemented for [`OptionOperations`] types
 /// implementing `Rem<Rhs>`.
 pub trait OptionRem<Rhs, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the remainder.
@@ -199,6 +200,7 @@ where
 /// Note that since the `std` library doesn't define any `CheckedRem` trait,
 /// users must provide the base implementation for the inner type.
 pub trait OptionCheckedRem<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the checked remainder.
@@ -309,6 +311,7 @@ impl_for_ints!(OptionCheckedRem, {
 /// Note that since the `std` library doesn't define any `OverflowingRem`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingRem<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Returns a tuple of the remainder along with a boolean indicating
@@ -403,6 +406,7 @@ impl_for_ints!(OptionOverflowingRem, {
 /// Note that since the `std` library doesn't define any `WrappingRem`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingRem<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the remainder, wrapping around at the numeric bounds

@@ -16,6 +16,7 @@ use crate::{Error, OptionOperations};
 /// This trait is auto-implemented for [`OptionOperations`] types
 /// implementing `Sub<Rhs>`.
 pub trait OptionSub<Rhs, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the substraction.
@@ -191,6 +192,7 @@ where
 /// Note that since the `std` library doesn't define any `CheckedSub` trait,
 /// users must provide the base implementation for the inner type.
 pub trait OptionCheckedSub<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the checked substraction.
@@ -313,6 +315,7 @@ impl OptionCheckedSub<std::time::Duration> for std::time::SystemTime {
 /// Note that since the `std` library doesn't define any `OverflowingSub`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingSub<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Returns a tuple of the substraction along with a boolean indicating
@@ -403,6 +406,7 @@ impl_for_ints!(OptionOverflowingSub, {
 /// Note that since the `std` library doesn't define any `SaturatingSub`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionSaturatingSub<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the substraction, saturating at the numeric bounds instead of
@@ -492,6 +496,7 @@ impl_for_ints_and_duration!(OptionSaturatingSub, {
 /// Note that since the `std` library doesn't define any `WrappingSub`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingSub<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the substraction, wrapping around at the numeric bounds

@@ -16,6 +16,7 @@ use crate::{Error, OptionOperations};
 /// This trait is auto-implemented for [`OptionOperations`] types
 /// implementing `Add<Rhs>`.
 pub trait OptionAdd<Rhs, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the addition.
@@ -191,6 +192,7 @@ where
 /// Note that since the `std` library doesn't define any `CheckedAdd` trait,
 /// users must provide the base implementation for the inner type.
 pub trait OptionCheckedAdd<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the checked addition.
@@ -313,6 +315,7 @@ impl OptionCheckedAdd<std::time::Duration> for std::time::SystemTime {
 /// Note that since the `std` library doesn't define any `OverflowingAdd`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingAdd<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Returns a tuple of the addition along with a boolean indicating
@@ -403,6 +406,7 @@ impl_for_ints!(OptionOverflowingAdd, {
 /// Note that since the `std` library doesn't define any `SaturatingAdd`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionSaturatingAdd<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the addition, saturating at the numeric bounds instead of
@@ -492,6 +496,7 @@ impl_for_ints_and_duration!(OptionSaturatingAdd, {
 /// Note that since the `std` library doesn't define any `WrappingAdd`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingAdd<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the addition, wrapping around at the numeric bounds

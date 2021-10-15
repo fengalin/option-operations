@@ -16,6 +16,7 @@ use crate::{Error, OptionOperations};
 /// This trait is auto-implemented for [`OptionOperations`] types
 /// implementing `Mul<Rhs>`.
 pub trait OptionMul<Rhs, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the multiplication.
@@ -191,6 +192,7 @@ where
 /// Note that since the `std` library doesn't define any `CheckedMul` trait,
 /// users must provide the base implementation for the inner type.
 pub trait OptionCheckedMul<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the checked multiplication.
@@ -304,6 +306,7 @@ impl OptionCheckedMul<u32> for core::time::Duration {
 /// Note that since the `std` library doesn't define any `OverflowingMul`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingMul<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Returns a tuple of the multiplication along with a boolean indicating
@@ -394,6 +397,7 @@ impl_for_ints!(OptionOverflowingMul, {
 /// Note that since the `std` library doesn't define any `SaturatingMul`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionSaturatingMul<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the multiplication, saturating at the numeric bounds instead of
@@ -490,6 +494,7 @@ impl OptionSaturatingMul<u32> for core::time::Duration {
 /// Note that since the `std` library doesn't define any `WrappingMul`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingMul<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the multiplication, wrapping around at the numeric bounds

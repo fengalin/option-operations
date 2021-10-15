@@ -16,6 +16,7 @@ use crate::{Error, OptionOperations};
 /// This trait is auto-implemented for [`OptionOperations`] types
 /// implementing `Div<Rhs>`.
 pub trait OptionDiv<Rhs, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the division.
@@ -199,6 +200,7 @@ where
 /// Note that since the `std` library doesn't define any `CheckedDiv` trait,
 /// users must provide the base implementation for the inner type.
 pub trait OptionCheckedDiv<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the checked division.
@@ -319,6 +321,7 @@ impl OptionCheckedDiv<u32> for core::time::Duration {
 /// Note that since the `std` library doesn't define any `OverflowingDiv`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionOverflowingDiv<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Returns a tuple of the division along with a boolean indicating
@@ -413,6 +416,7 @@ impl_for_ints!(OptionOverflowingDiv, {
 /// Note that since the `std` library doesn't define any `WrappingDiv`
 /// trait, users must provide the base implementation for the inner type.
 pub trait OptionWrappingDiv<Rhs = Self, InnerRhs = Rhs> {
+    /// The resulting inner type after applying the operation.
     type Output;
 
     /// Computes the division, wrapping around at the numeric bounds
