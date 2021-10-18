@@ -1,11 +1,9 @@
-#[macro_export]
 macro_rules! impl_for {
     ($trait:ident, $typ_:ty, $block:tt) => {
         impl $trait for $typ_ $block
     };
 }
 
-#[macro_export]
 macro_rules! impl_for_ints {
     ($trait:ident, $block:tt) => {
         impl_for!($trait, i8, $block);
@@ -21,7 +19,6 @@ macro_rules! impl_for_ints {
     };
 }
 
-#[macro_export]
 macro_rules! impl_for_floats {
     ($trait:ident, $block:tt) => {
         impl_for!($trait, f32, $block);
@@ -29,7 +26,6 @@ macro_rules! impl_for_floats {
     };
 }
 
-#[macro_export]
 macro_rules! impl_for_numerics {
     ($trait:ident, $block:tt) => {
         impl_for_ints!($trait, $block);
@@ -37,7 +33,6 @@ macro_rules! impl_for_numerics {
     };
 }
 
-#[macro_export]
 macro_rules! impl_for_time_types {
     ($trait:ident, $block:tt) => {
         impl_for!($trait, core::time::Duration, $block);
@@ -48,7 +43,6 @@ macro_rules! impl_for_time_types {
     };
 }
 
-#[macro_export]
 macro_rules! impl_for_ints_and_duration {
     ($trait:ident, $block:tt) => {
         impl_for_ints!($trait, $block);
@@ -56,7 +50,6 @@ macro_rules! impl_for_ints_and_duration {
     };
 }
 
-#[macro_export]
 macro_rules! impl_for_all {
     ($trait:ident, $block:tt) => {
         impl_for_numerics!($trait, $block);
