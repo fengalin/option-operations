@@ -31,57 +31,57 @@ macro_rules! option_op_assign {
 
             impl<T, InnerRhs> [<Option $trait Assign>]<Option<InnerRhs>, InnerRhs> for T
             where
-                T: OptionOperations + [<$trait Assign>]<InnerRhs>,
+                T: OptionOperations + [<Option $trait Assign>]<InnerRhs>,
             {
                 fn [<opt_ $op _assign>](&mut self, rhs: Option<InnerRhs>) {
                     if let Some(inner_rhs) = rhs {
-                        self.[<$op _assign>](inner_rhs)
+                        self.[<opt_ $op _assign>](inner_rhs)
                     }
                 }
             }
 
             impl<T, InnerRhs> [<Option $trait Assign>]<&Option<InnerRhs>, InnerRhs> for T
             where
-                T: OptionOperations + [<$trait Assign>]<InnerRhs>,
+                T: OptionOperations + [<Option $trait Assign>]<InnerRhs>,
                 InnerRhs: Copy,
             {
                 fn [<opt_ $op _assign>](&mut self, rhs: &Option<InnerRhs>) {
                     if let Some(inner_rhs) = rhs.as_ref() {
-                        self.[<$op _assign>](*inner_rhs)
+                        self.[<opt_ $op _assign>](*inner_rhs)
                     }
                 }
             }
 
             impl<T, Rhs> [<Option $trait Assign>]<Rhs> for Option<T>
             where
-                T: OptionOperations + [<$trait Assign>]<Rhs>,
+                T: OptionOperations + [<Option $trait Assign>]<Rhs>,
             {
                 fn [<opt_ $op _assign>](&mut self, rhs: Rhs) {
                     if let Some(inner_self) = self {
-                        inner_self.[<$op _assign>](rhs)
+                        inner_self.[<opt_ $op _assign>](rhs)
                     }
                 }
             }
 
             impl<T, InnerRhs> [<Option $trait Assign>]<Option<InnerRhs>, InnerRhs> for Option<T>
             where
-                T: OptionOperations + [<$trait Assign>]<InnerRhs>,
+                T: OptionOperations + [<Option $trait Assign>]<InnerRhs>,
             {
                 fn [<opt_ $op _assign>](&mut self, rhs: Option<InnerRhs>) {
                     if let Some((inner_self, inner_rhs)) = self.as_mut().zip(rhs) {
-                        inner_self.[<$op _assign>](inner_rhs)
+                        inner_self.[<opt_ $op _assign>](inner_rhs)
                     }
                 }
             }
 
             impl<T, InnerRhs> [<Option $trait Assign>]<&Option<InnerRhs>, InnerRhs> for Option<T>
             where
-                T: OptionOperations + [<$trait Assign>]<InnerRhs>,
+                T: OptionOperations + [<Option $trait Assign>]<InnerRhs>,
                 InnerRhs: Copy,
             {
                 fn [<opt_ $op _assign>](&mut self, rhs: &Option<InnerRhs>) {
                     if let Some((inner_self, inner_rhs)) = self.as_mut().zip(rhs.as_ref()) {
-                        inner_self.[<$op _assign>](*inner_rhs)
+                        inner_self.[<opt_ $op _assign>](*inner_rhs)
                     }
                 }
             }

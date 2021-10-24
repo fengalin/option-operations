@@ -37,60 +37,60 @@ macro_rules! option_op {
 
             impl<T, InnerRhs> [<Option $op_trait>]<Option<InnerRhs>, InnerRhs> for T
             where
-                T: OptionOperations + $op_trait<InnerRhs>,
+                T: OptionOperations + [<Option $op_trait>]<InnerRhs>,
             {
-                type Output = <T as $op_trait<InnerRhs>>::Output;
+                type Output = <T as [<Option $op_trait>]<InnerRhs>>::Output;
 
                 fn [<opt_ $op>](self, rhs: Option<InnerRhs>) -> Option<Self::Output> {
-                    rhs.map(|inner_rhs| self.$op(inner_rhs))
+                    rhs.and_then(|inner_rhs| self.[<opt_ $op>](inner_rhs))
                 }
             }
 
             impl<T, InnerRhs> [<Option $op_trait>]<&Option<InnerRhs>, InnerRhs> for T
             where
-                T: OptionOperations + $op_trait<InnerRhs>,
+                T: OptionOperations + [<Option $op_trait>]<InnerRhs>,
                 InnerRhs: Copy,
             {
-                type Output = <T as $op_trait<InnerRhs>>::Output;
+                type Output = <T as [<Option $op_trait>]<InnerRhs>>::Output;
 
                 fn [<opt_ $op>](self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
-                    rhs.as_ref().map(|inner_rhs| self.$op(*inner_rhs))
+                    rhs.as_ref().and_then(|inner_rhs| self.[<opt_ $op>](*inner_rhs))
                 }
             }
 
             impl<T, Rhs> [<Option $op_trait>]<Rhs> for Option<T>
             where
-                T: OptionOperations + $op_trait<Rhs>,
+                T: OptionOperations + [<Option $op_trait>]<Rhs>,
             {
-                type Output = <T as $op_trait<Rhs>>::Output;
+                type Output = <T as [<Option $op_trait>]<Rhs>>::Output;
 
                 fn [<opt_ $op>](self, rhs: Rhs) -> Option<Self::Output> {
-                    self.map(|inner_self| inner_self.$op(rhs))
+                    self.and_then(|inner_self| inner_self.[<opt_ $op>](rhs))
                 }
             }
 
             impl<T, InnerRhs> [<Option $op_trait>]<Option<InnerRhs>, InnerRhs> for Option<T>
             where
-                T: OptionOperations + $op_trait<InnerRhs>,
+                T: OptionOperations + [<Option $op_trait>]<InnerRhs>,
             {
-                type Output = <T as $op_trait<InnerRhs>>::Output;
+                type Output = <T as [<Option $op_trait>]<InnerRhs>>::Output;
 
                 fn [<opt_ $op>](self, rhs: Option<InnerRhs>) -> Option<Self::Output> {
                     self.zip(rhs)
-                        .map(|(inner_self, inner_rhs)| inner_self.$op(inner_rhs))
+                        .and_then(|(inner_self, inner_rhs)| inner_self.[<opt_ $op>](inner_rhs))
                 }
             }
 
             impl<T, InnerRhs> [<Option $op_trait>]<&Option<InnerRhs>, InnerRhs> for Option<T>
             where
-                T: OptionOperations + $op_trait<InnerRhs>,
+                T: OptionOperations + [<Option $op_trait>]<InnerRhs>,
                 InnerRhs: Copy,
             {
-                type Output = <T as $op_trait<InnerRhs>>::Output;
+                type Output = <T as [<Option $op_trait>]<InnerRhs>>::Output;
 
                 fn [<opt_ $op>](self, rhs: &Option<InnerRhs>) -> Option<Self::Output> {
                     self.zip(rhs.as_ref())
-                        .map(|(inner_self, inner_rhs)| inner_self.$op(*inner_rhs))
+                        .and_then(|(inner_self, inner_rhs)| inner_self.[<opt_ $op>](*inner_rhs))
                 }
             }
         }
