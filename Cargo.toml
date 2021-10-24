@@ -19,3 +19,6 @@ default = ["std"]
 # std::time::Instant and impl std traits like Display & Error.
 # Requires a dependency on the Rust standard library.
 std = []
+
+[dependencies]
+paste = "1.0"
