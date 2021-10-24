@@ -12,17 +12,17 @@ let lhs = Some(1u64);
 let rhs = Some(u64::MAX);
 
 assert_eq!(
-    lhs.zip(rhs).map(|(lhs, rhs)| lhs.wrapping_add(rhs)),
-    Some(0),
+    lhs.zip(rhs).map(|(lhs, rhs)| lhs.saturating_add(rhs)),
+    Some(u64::MAX),
 );
 ```
 
-Thanks to the trait `OptionWrappingAdd` we can write:
+Thanks to the trait `OptionSaturatingAdd` we can write:
 
 ``` rust
 assert_eq!(
-    lhs.opt_wrapping_add(rhs),
-    Some(0),
+    lhs.opt_saturating_add(rhs),
+    Some(u64::MAX),
 );
 ```
 
@@ -30,13 +30,13 @@ The trait can also be used with the inner type:
 
 ``` rust
 assert_eq!(
-    lhs.opt_wrapping_add(u64::MAX),
-    Some(0),
+    lhs.opt_saturating_add(u64::MAX),
+    Some(u64::MAX),
 );
 
 assert_eq!(
-    1.opt_wrapping_add(rhs),
-    Some(0),
+    1.opt_saturating_add(rhs),
+    Some(u64::MAX),
 );
 ```
 
@@ -61,6 +61,13 @@ is not defined and thus can not be compared with `Some(_)`.
 ``` rust
 assert_eq!(none.opt_cmp(&some_0), None);
 assert_eq!(some_0.opt_cmp(&none), None);
+```
+
+Of course, this is consistent with other usual comparisons:
+
+``` rust
+assert_eq!(none.opt_lt(&some_0), None);
+assert_eq!(none.opt_min(&some_0), None);
 ```
 
 ## LICENSE
