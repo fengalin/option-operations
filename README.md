@@ -1,4 +1,8 @@
-# option-operations ![CI](https://github.com/fengalin/option-operations/workflows/CI/badge.svg)
+# option-operations
+
+[![crates.io][Crate Logo]][Crate]
+[![Documentation][Doc Logo]][Doc]
+[![Build Status][CI Logo]][CI]
 
 `option-operations` provides traits and auto-implementations to
 improve arithmetic operations usability when dealing with `Option`s.
@@ -80,3 +84,14 @@ This crate is licensed under either of
    http://opensource.org/licenses/MIT)
 
 at your option.
+
+
+[Crate]: https://crates.io/crates/option-operations
+[Crate Logo]: https://img.shields.io/crates/v/option-operations.svg
+
+[Doc]: https://docs.rs/option-operations
+[Doc Logo]: https://docs.rs/option-operations/badge.svg
+
+[CI]: https://github.com/fengalin/option-operations/actions/workflows/CI.yml
+[CI Logo]: https://github.com/fengalin/option-operations/workflows/CI/badge.svg
+
