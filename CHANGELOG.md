@@ -6,6 +6,10 @@
 
 - Fix repository link in `Cargo.toml`.
 
+### Fixed
+
+- Error: fix a typo in Display impl.
+
 ### Changed
 
 - Add `forbid(unsafe_code)` constraint.

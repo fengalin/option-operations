@@ -35,7 +35,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::DivisionByZero => f.write_str("An Option Operation overflowed"),
-            Error::Overflow => f.write_str("Division by zerp attempted with an Option Operation"),
+            Error::Overflow => f.write_str("Division by zero attempted with an Option Operation"),
         }
     }
 }
