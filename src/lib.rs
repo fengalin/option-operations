@@ -81,6 +81,7 @@
 //! assert_eq!(none.opt_min(some_0), None);
 //! ```
 
+#![forbid(unsafe_code)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 /// Trait for inner types participating in `option-operations`.
