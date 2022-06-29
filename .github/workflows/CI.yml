@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -21,15 +21,30 @@ jobs:
       run: cargo clippy --tests
 
   build:
-    name: "Build & Tests"
+    name: "Build & Test"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+          - "1.53.0"
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ matrix.rust }}
+        override: true
+    - name: Test default features
+      run: cargo test --verbose
+    - name: Test no default features
+      run: cargo test --verbose --no-default-features
+
+  doc:
+    name: "Doc"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build
-      run: cargo build --verbose
-    - name: Tests default features
-      run: cargo test --verbose
-    - name: Tests no default features
-      run: cargo test --verbose --no-default-features
     - name: Check doc generation
       run: cargo doc --verbose

@@ -5,6 +5,7 @@
 ### Added
 
 - Fix repository link in `Cargo.toml`.
+- Specify Minimum Supported Rust Version.
 
 ### Fixed
 
