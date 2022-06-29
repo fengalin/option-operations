@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+-
+
+## [0.4.1] -- 2022-06-29
+
 ### Added
 
 - Fix repository link in `Cargo.toml`.
@@ -47,7 +51,7 @@
 - First version with the most common operations.
 
 [Unreleased]: https://github.com/fengalin/option-operations/
-[0.4.0]: https://github.com/fengalin/option-operations/tree/0.4.0
+[0.4.1]: https://github.com/fengalin/option-operations/tree/0.4.1
 [0.3.0]: https://github.com/fengalin/option-operations/tree/0.3.0
 [0.2.0]: https://github.com/fengalin/option-operations/tree/0.2.0
 [0.1.0]: https://github.com/fengalin/option-operations/tree/0.1.0

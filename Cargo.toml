@@ -1,6 +1,6 @@
 [package]
 name = "option-operations"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["François Laignel <fengalin@free.fr>"]
 categories = ["rust-patterns", "no-std", "mathematics"]
 description = "Traits and auto-implementations to improve arithmetic operations usability when dealing with `Option`s."
