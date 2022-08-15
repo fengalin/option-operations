@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
--
+- Fix `prelude` not exporting `OptionEq`.
 
 ## [0.4.1] -- 2022-06-29
 

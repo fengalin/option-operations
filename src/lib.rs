@@ -149,6 +149,7 @@ pub mod prelude {
     pub use crate::div::{
         OptionCheckedDiv, OptionDiv, OptionDivAssign, OptionOverflowingDiv, OptionWrappingDiv,
     };
+    pub use crate::eq::OptionEq;
     pub use crate::min_max::OptionMinMax;
     pub use crate::mul::{
         OptionCheckedMul, OptionMul, OptionMulAssign, OptionOverflowingMul, OptionSaturatingMul,
