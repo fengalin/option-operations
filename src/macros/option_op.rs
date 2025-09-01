@@ -1,6 +1,6 @@
 macro_rules! option_op {
     ($op_trait:ident, $op:ident, $op_name:ident $(, $extra_doc:expr)? $(,)?) => {
-        paste::paste! {
+        pastey::paste! {
             #[doc = "Trait for values and `Option`s " $op_name "."]
             ///
             /// Implementing this trait leads to the following auto-implementations:

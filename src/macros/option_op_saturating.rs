@@ -1,6 +1,6 @@
 macro_rules! option_op_saturating {
     ($trait:ident, $op:ident, $op_name:ident $(,)?) => {
-        paste::paste! {
+        pastey::paste! {
             #[doc = "Trait for values and `Option`s saturating " $op_name "."]
             ///
             /// Implementing this trait leads to the following auto-implementations:

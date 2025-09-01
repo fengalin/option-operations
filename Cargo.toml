@@ -21,4 +21,4 @@ default = ["std"]
 std = []
 
 [dependencies]
-paste = "1.0.6"
+pastey = "0.1.1"

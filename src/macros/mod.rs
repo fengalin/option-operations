@@ -21,7 +21,7 @@ mod option_op_wrapping;
 
 macro_rules! common_option_op {
     ($trait:ident, $op:ident, $op_name:ident $(, $extra_doc:expr)? $(,)?) => {
-        paste::paste! {
+        pastey::paste! {
             option_op!(
                 $trait,
                 $op,
