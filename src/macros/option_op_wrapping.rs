@@ -1,6 +1,6 @@
 macro_rules! option_op_wrapping {
     ($trait:ident, $op:ident, $op_name:ident $(, $extra_doc:expr)? $(,)?) => {
-        paste::paste! {
+        pastey::paste! {
             #[doc = "Trait for values and `Option`s wrapping " $op_name "."]
             ///
             /// Implementing this trait leads to the following auto-implementations:

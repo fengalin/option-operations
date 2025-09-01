@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
--
+- Use `pastey` instead of `paste` which is no longer maintained.
 
 ## [0.5.0] -- 2022-08-15
 
