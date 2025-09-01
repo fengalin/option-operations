@@ -93,6 +93,66 @@ mod test {
         }
     }
 
+    impl OptionCheckedAdd for MyInt {
+        type Output = MyInt;
+        fn opt_checked_add(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_add(rhs.0).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionCheckedAdd<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_checked_add(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_add(rhs).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionSaturatingAdd for MyInt {
+        type Output = MyInt;
+        fn opt_saturating_add(self, rhs: MyInt) -> Option<Self::Output> {
+            self.0.opt_saturating_add(rhs.0).map(MyInt)
+        }
+    }
+
+    impl OptionSaturatingAdd<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_saturating_add(self, rhs: u64) -> Option<Self::Output> {
+            self.0.opt_saturating_add(rhs).map(MyInt)
+        }
+    }
+
+    impl OptionOverflowingAdd for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_add(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_add(rhs.0)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionOverflowingAdd<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_add(self, rhs: u64) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_add(rhs)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionWrappingAdd for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_add(self, rhs: MyInt) -> Option<Self::Output> {
+            self.0.opt_wrapping_add(rhs.0).map(MyInt)
+        }
+    }
+
+    impl OptionWrappingAdd<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_add(self, rhs: u64) -> Option<Self::Output> {
+            self.0.opt_wrapping_add(rhs).map(MyInt)
+        }
+    }
+
     const MY_0: MyInt = MyInt(0);
     const MY_1: MyInt = MyInt(1);
     const MY_2: MyInt = MyInt(2);
@@ -200,20 +260,6 @@ mod test {
 
     #[test]
     fn checked_add() {
-        impl OptionCheckedAdd for MyInt {
-            type Output = MyInt;
-            fn opt_checked_add(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_add(rhs.0).map(|ok| ok.map(MyInt))
-            }
-        }
-
-        impl OptionCheckedAdd<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_checked_add(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_add(rhs).map(|ok| ok.map(MyInt))
-            }
-        }
-
         assert_eq!(MY_1.opt_checked_add(MY_1), Ok(SOME_2));
         assert_eq!(MY_1.opt_checked_add(SOME_1), Ok(SOME_2));
         assert_eq!(MY_1.opt_checked_add(&SOME_1), Ok(SOME_2));
@@ -233,20 +279,6 @@ mod test {
 
     #[test]
     fn saturating_add() {
-        impl OptionSaturatingAdd for MyInt {
-            type Output = MyInt;
-            fn opt_saturating_add(self, rhs: MyInt) -> Option<Self::Output> {
-                self.0.opt_saturating_add(rhs.0).map(MyInt)
-            }
-        }
-
-        impl OptionSaturatingAdd<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_saturating_add(self, rhs: u64) -> Option<Self::Output> {
-                self.0.opt_saturating_add(rhs).map(MyInt)
-            }
-        }
-
         assert_eq!(MY_1.opt_saturating_add(MY_1), SOME_2);
         assert_eq!(MY_MAX.opt_saturating_add(MY_1), SOME_MAX);
         assert_eq!(SOME_MAX.opt_saturating_add(MY_1), SOME_MAX);
@@ -261,24 +293,6 @@ mod test {
 
     #[test]
     fn overflowing_add() {
-        impl OptionOverflowingAdd for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_add(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_add(rhs.0)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
-        impl OptionOverflowingAdd<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_add(self, rhs: u64) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_add(rhs)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
         assert_eq!(MY_1.opt_overflowing_add(MY_1), Some((MY_2, false)));
         assert_eq!(MY_MAX.opt_overflowing_add(MY_1), Some((MY_0, true)));
         assert_eq!(SOME_MAX.opt_overflowing_add(MY_1), Some((MY_0, true)));
@@ -293,20 +307,6 @@ mod test {
 
     #[test]
     fn wrapping_add() {
-        impl OptionWrappingAdd for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_add(self, rhs: MyInt) -> Option<Self::Output> {
-                self.0.opt_wrapping_add(rhs.0).map(MyInt)
-            }
-        }
-
-        impl OptionWrappingAdd<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_add(self, rhs: u64) -> Option<Self::Output> {
-                self.0.opt_wrapping_add(rhs).map(MyInt)
-            }
-        }
-
         assert_eq!(MY_1.opt_wrapping_add(MY_1), SOME_2);
         assert_eq!(MY_MAX.opt_wrapping_add(MY_1), SOME_0);
         assert_eq!(SOME_MAX.opt_wrapping_add(MY_1), SOME_0);

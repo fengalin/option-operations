@@ -95,6 +95,52 @@ mod test {
         }
     }
 
+    impl OptionCheckedDiv for MyInt {
+        type Output = MyInt;
+        fn opt_checked_div(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_div(rhs.0).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionCheckedDiv<i64> for MyInt {
+        type Output = MyInt;
+        fn opt_checked_div(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_div(rhs).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionOverflowingDiv for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_div(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_div(rhs.0)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionOverflowingDiv<i64> for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_div(self, rhs: i64) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_div(rhs)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionWrappingDiv for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_div(self, rhs: MyInt) -> Option<Self::Output> {
+            self.0.opt_wrapping_div(rhs.0).map(MyInt)
+        }
+    }
+
+    impl OptionWrappingDiv<i64> for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_div(self, rhs: i64) -> Option<Self::Output> {
+            self.0.opt_wrapping_div(rhs).map(MyInt)
+        }
+    }
+
     const MY_MINUS_1: MyInt = MyInt(-1);
     const MY_0: MyInt = MyInt(0);
     const MY_1: MyInt = MyInt(1);
@@ -245,20 +291,6 @@ mod test {
 
     #[test]
     fn checked_div() {
-        impl OptionCheckedDiv for MyInt {
-            type Output = MyInt;
-            fn opt_checked_div(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_div(rhs.0).map(|ok| ok.map(MyInt))
-            }
-        }
-
-        impl OptionCheckedDiv<i64> for MyInt {
-            type Output = MyInt;
-            fn opt_checked_div(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_div(rhs).map(|ok| ok.map(MyInt))
-            }
-        }
-
         assert_eq!(MY_2.opt_checked_div(MY_1), Ok(SOME_2));
         assert_eq!(MY_10.opt_checked_div(SOME_5), Ok(SOME_2));
         assert_eq!(MY_0.opt_checked_div(&SOME_1), Ok(SOME_0));
@@ -288,24 +320,6 @@ mod test {
 
     #[test]
     fn overflowing_div() {
-        impl OptionOverflowingDiv for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_div(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_div(rhs.0)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
-        impl OptionOverflowingDiv<i64> for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_div(self, rhs: i64) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_div(rhs)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
         assert_eq!(MY_2.opt_overflowing_div(MY_1), Some((MY_2, false)));
         assert_eq!(MY_0.opt_overflowing_div(MY_1), Some((MY_0, false)));
         assert_eq!(MY_MAX.opt_overflowing_div(MY_2), Some((MY_HALF_MAX, false)));
@@ -334,20 +348,6 @@ mod test {
 
     #[test]
     fn wrapping_div() {
-        impl OptionWrappingDiv for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_div(self, rhs: MyInt) -> Option<Self::Output> {
-                self.0.opt_wrapping_div(rhs.0).map(MyInt)
-            }
-        }
-
-        impl OptionWrappingDiv<i64> for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_div(self, rhs: i64) -> Option<Self::Output> {
-                self.0.opt_wrapping_div(rhs).map(MyInt)
-            }
-        }
-
         assert_eq!(MY_2.opt_wrapping_div(MY_1), SOME_2);
         assert_eq!(MY_0.opt_wrapping_div(MY_1), SOME_0);
         assert_eq!(MY_MIN.opt_wrapping_div(MY_MINUS_1), SOME_MIN);

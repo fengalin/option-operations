@@ -85,6 +85,52 @@ mod test {
         }
     }
 
+    impl OptionCheckedRem for MyInt {
+        type Output = MyInt;
+        fn opt_checked_rem(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_rem(rhs.0).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionCheckedRem<i64> for MyInt {
+        type Output = MyInt;
+        fn opt_checked_rem(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_rem(rhs).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionOverflowingRem for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_rem(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_rem(rhs.0)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionOverflowingRem<i64> for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_rem(self, rhs: i64) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_rem(rhs)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionWrappingRem for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_rem(self, rhs: MyInt) -> Option<Self::Output> {
+            self.0.opt_wrapping_rem(rhs.0).map(MyInt)
+        }
+    }
+
+    impl OptionWrappingRem<i64> for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_rem(self, rhs: i64) -> Option<Self::Output> {
+            self.0.opt_wrapping_rem(rhs).map(MyInt)
+        }
+    }
+
     const MY_MINUS_1: MyInt = MyInt(-1);
     const MY_0: MyInt = MyInt(0);
     const MY_1: MyInt = MyInt(1);
@@ -233,20 +279,6 @@ mod test {
 
     #[test]
     fn checked_rem() {
-        impl OptionCheckedRem for MyInt {
-            type Output = MyInt;
-            fn opt_checked_rem(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_rem(rhs.0).map(|ok| ok.map(MyInt))
-            }
-        }
-
-        impl OptionCheckedRem<i64> for MyInt {
-            type Output = MyInt;
-            fn opt_checked_rem(self, rhs: i64) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_rem(rhs).map(|ok| ok.map(MyInt))
-            }
-        }
-
         assert_eq!(MY_2.opt_checked_rem(MY_1), Ok(SOME_0));
         assert_eq!(MY_5.opt_checked_rem(SOME_2), Ok(SOME_1));
         assert_eq!(MY_0.opt_checked_rem(&SOME_1), Ok(SOME_0));
@@ -276,24 +308,6 @@ mod test {
 
     #[test]
     fn overflowing_rem() {
-        impl OptionOverflowingRem for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_rem(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_rem(rhs.0)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
-        impl OptionOverflowingRem<i64> for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_rem(self, rhs: i64) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_rem(rhs)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
         assert_eq!(MY_2.opt_overflowing_rem(MY_1), Some((MY_0, false)));
         assert_eq!(MY_0.opt_overflowing_rem(MY_1), Some((MY_0, false)));
         assert_eq!(MY_MAX.opt_overflowing_rem(MY_2), Some((MY_1, false)));
@@ -313,20 +327,6 @@ mod test {
 
     #[test]
     fn wrapping_rem() {
-        impl OptionWrappingRem for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_rem(self, rhs: MyInt) -> Option<Self::Output> {
-                self.0.opt_wrapping_rem(rhs.0).map(MyInt)
-            }
-        }
-
-        impl OptionWrappingRem<i64> for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_rem(self, rhs: i64) -> Option<Self::Output> {
-                self.0.opt_wrapping_rem(rhs).map(MyInt)
-            }
-        }
-
         assert_eq!(MY_2.opt_wrapping_rem(MY_1), SOME_0);
         assert_eq!(MY_0.opt_wrapping_rem(MY_1), SOME_0);
         assert_eq!(MY_MAX.opt_wrapping_rem(MY_2), SOME_1);
