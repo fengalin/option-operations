@@ -93,6 +93,66 @@ mod test {
         }
     }
 
+    impl OptionCheckedSub for MyInt {
+        type Output = MyInt;
+        fn opt_checked_sub(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_sub(rhs.0).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionCheckedSub<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_checked_sub(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
+            self.0.opt_checked_sub(rhs).map(|ok| ok.map(MyInt))
+        }
+    }
+
+    impl OptionSaturatingSub for MyInt {
+        type Output = MyInt;
+        fn opt_saturating_sub(self, rhs: MyInt) -> Option<Self::Output> {
+            self.0.opt_saturating_sub(rhs.0).map(MyInt)
+        }
+    }
+
+    impl OptionSaturatingSub<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_saturating_sub(self, rhs: u64) -> Option<Self::Output> {
+            self.0.opt_saturating_sub(rhs).map(MyInt)
+        }
+    }
+
+    impl OptionOverflowingSub for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_sub(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_sub(rhs.0)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionOverflowingSub<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_overflowing_sub(self, rhs: u64) -> Option<(Self::Output, bool)> {
+            self.0
+                .opt_overflowing_sub(rhs)
+                .map(|(val, flag)| (MyInt(val), flag))
+        }
+    }
+
+    impl OptionWrappingSub for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_sub(self, rhs: MyInt) -> Option<Self::Output> {
+            self.0.opt_wrapping_sub(rhs.0).map(MyInt)
+        }
+    }
+
+    impl OptionWrappingSub<u64> for MyInt {
+        type Output = MyInt;
+        fn opt_wrapping_sub(self, rhs: u64) -> Option<Self::Output> {
+            self.0.opt_wrapping_sub(rhs).map(MyInt)
+        }
+    }
+
     const MY_0: MyInt = MyInt(0);
     const MY_1: MyInt = MyInt(1);
     const MY_2: MyInt = MyInt(2);
@@ -202,20 +262,6 @@ mod test {
 
     #[test]
     fn checked_sub() {
-        impl OptionCheckedSub for MyInt {
-            type Output = MyInt;
-            fn opt_checked_sub(self, rhs: MyInt) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_sub(rhs.0).map(|ok| ok.map(MyInt))
-            }
-        }
-
-        impl OptionCheckedSub<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_checked_sub(self, rhs: u64) -> Result<Option<Self::Output>, Error> {
-                self.0.opt_checked_sub(rhs).map(|ok| ok.map(MyInt))
-            }
-        }
-
         assert_eq!(MY_3.opt_checked_sub(MY_1), Ok(SOME_2));
         assert_eq!(MY_3.opt_checked_sub(SOME_1), Ok(SOME_2));
         assert_eq!(MY_3.opt_checked_sub(&SOME_1), Ok(SOME_2));
@@ -235,20 +281,6 @@ mod test {
 
     #[test]
     fn saturating_sub() {
-        impl OptionSaturatingSub for MyInt {
-            type Output = MyInt;
-            fn opt_saturating_sub(self, rhs: MyInt) -> Option<Self::Output> {
-                self.0.opt_saturating_sub(rhs.0).map(MyInt)
-            }
-        }
-
-        impl OptionSaturatingSub<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_saturating_sub(self, rhs: u64) -> Option<Self::Output> {
-                self.0.opt_saturating_sub(rhs).map(MyInt)
-            }
-        }
-
         assert_eq!(MY_3.opt_saturating_sub(MY_1), SOME_2);
         assert_eq!(MY_1.opt_saturating_sub(MY_2), SOME_0);
         assert_eq!(SOME_1.opt_saturating_sub(MY_2), SOME_0);
@@ -263,24 +295,6 @@ mod test {
 
     #[test]
     fn overflowing_sub() {
-        impl OptionOverflowingSub for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_sub(self, rhs: MyInt) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_sub(rhs.0)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
-        impl OptionOverflowingSub<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_overflowing_sub(self, rhs: u64) -> Option<(Self::Output, bool)> {
-                self.0
-                    .opt_overflowing_sub(rhs)
-                    .map(|(val, flag)| (MyInt(val), flag))
-            }
-        }
-
         assert_eq!(MY_3.opt_overflowing_sub(MY_1), Some((MY_2, false)));
         assert_eq!(MY_1.opt_overflowing_sub(MY_2), Some((MY_MAX, true)));
         assert_eq!(SOME_1.opt_overflowing_sub(MY_2), Some((MY_MAX, true)));
@@ -295,20 +309,6 @@ mod test {
 
     #[test]
     fn wrapping_sub() {
-        impl OptionWrappingSub for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_sub(self, rhs: MyInt) -> Option<Self::Output> {
-                self.0.opt_wrapping_sub(rhs.0).map(MyInt)
-            }
-        }
-
-        impl OptionWrappingSub<u64> for MyInt {
-            type Output = MyInt;
-            fn opt_wrapping_sub(self, rhs: u64) -> Option<Self::Output> {
-                self.0.opt_wrapping_sub(rhs).map(MyInt)
-            }
-        }
-
         assert_eq!(MY_3.opt_wrapping_sub(MY_1), SOME_2);
         assert_eq!(MY_1.opt_wrapping_sub(MY_2), SOME_MAX);
         assert_eq!(SOME_1.opt_wrapping_sub(MY_2), SOME_MAX);
