@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Use `pastey` instead of `paste` which is no longer maintained.
+  This also requires upgrading the MSRV to 1.54.
 
 ## [0.5.0] -- 2022-08-15
 
