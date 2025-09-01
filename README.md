@@ -96,4 +96,4 @@ at your option.
 [CI]: https://github.com/fengalin/option-operations/actions/workflows/CI.yml
 [CI Logo]: https://github.com/fengalin/option-operations/workflows/CI/badge.svg
 
-[rustc Logo]: https://img.shields.io/badge/rust-1.53.0%2B-blue.svg?maxAge=3600
+[rustc Logo]: https://img.shields.io/badge/rust-1.54.0%2B-blue.svg?maxAge=3600
