@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+-
+
+## [0.6.0] -- 2025-09-01
+
+### Changed
+
 - Use `pastey` instead of `paste` which is no longer maintained.
   This also requires upgrading the MSRV to 1.54.
 
@@ -58,6 +64,7 @@
 - First version with the most common operations.
 
 [Unreleased]: https://github.com/fengalin/option-operations/
+[0.6.0]: https://github.com/fengalin/option-operations/tree/0.6.0
 [0.5.0]: https://github.com/fengalin/option-operations/tree/0.5.0
 [0.4.1]: https://github.com/fengalin/option-operations/tree/0.4.1
 [0.4.0]: https://github.com/fengalin/option-operations/tree/0.4.0
