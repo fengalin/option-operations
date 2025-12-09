@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
--
+- Update `pastey` to 0.2.0.
 
 ## [0.6.0] -- 2025-09-01
 
