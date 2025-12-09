@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+-
+
+## [0.6.1] -- 2025-12-09
+
 - Update `pastey` to 0.2.0.
 
 ## [0.6.0] -- 2025-09-01
@@ -64,6 +68,7 @@
 - First version with the most common operations.
 
 [Unreleased]: https://github.com/fengalin/option-operations/
+[0.6.1]: https://github.com/fengalin/option-operations/tree/0.6.1
 [0.6.0]: https://github.com/fengalin/option-operations/tree/0.6.0
 [0.5.0]: https://github.com/fengalin/option-operations/tree/0.5.0
 [0.4.1]: https://github.com/fengalin/option-operations/tree/0.4.1
